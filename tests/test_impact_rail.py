@@ -7,7 +7,7 @@ BENEFICIARY = "0x" + "22" * 20
 OTHER = "0x" + "33" * 20
 BASE = "a" * 40
 TARGET = "b" * 40
-PID = "0x" + "44" * 32
+RELEASE = "impactrail-v4-fixture"
 ARTIFACT_PATH = "evidence/impact-report.md"
 ARTIFACT = b"ImpactRail verified public-good delivery\n"
 ARTIFACT_SHA256 = "61a3711bb5104e7c176c117c6cfbb1f736890d7ff1f8e6cf14e2fdfb21e04b13"
@@ -18,7 +18,7 @@ AMOUNT = 1000
 
 def body_for(beneficiary=BENEFICIARY, amount=AMOUNT, repo="impactrail/demo", artifact_path=ARTIFACT_PATH, artifact_sha256=ARTIFACT_SHA256):
     return "\n".join(("impactrail_repo: " + repo, "impactrail_target_commit: " + TARGET,
-                      "impactrail_artifact_path: " + artifact_path, "impactrail_artifact_sha256: " + artifact_sha256,
+                      "impactrail_artifact_path: " + artifact_path, "impactrail_artifact_sha256: " + artifact_sha256, "impactrail_release_tag: " + RELEASE,
                       "impactrail_beneficiary: " + beneficiary, "impactrail_amount_wei: " + str(amount),
                       "Milestone: publish a reproducible public-good release"))
 
@@ -30,8 +30,8 @@ def source_payloads(beneficiary=BENEFICIARY, amount=AMOUNT, repo="impactrail/dem
         {"sha": "1" * 40, "author": {"login": "alice"}, "commit": {"author": {"name": "Alice"}}},
         {"sha": "2" * 40, "author": {"login": "bob"}, "commit": {"author": {"name": "Bob"}}},
         {"sha": "3" * 40, "author": {"login": "carol"}, "commit": {"author": {"name": "Carol"}}}]}
-    proposal = {"id": PID, "body": body_for(beneficiary, amount, repo, ARTIFACT_PATH, artifact_sha256), "state": "closed", "type": "single-choice", "start": "2026-09-01T00:00:00Z", "end": "2026-09-03T12:00:00Z", "choices": ["For", "Against", "Abstain"], "scores": [90, 2, 1], "scores_state": "final", "quorum": 1, "space": {"id": "impactrail.eth"}}
-    return github_repo, github_commit, compare, artifact, proposal
+    release = {"tag_name": RELEASE, "target_commitish": TARGET, "draft": False, "prerelease": False, "published_at": "2026-09-03T12:00:00Z", "body": body_for(beneficiary, amount, repo, ARTIFACT_PATH, artifact_sha256)}
+    return github_repo, github_commit, compare, artifact, release
 
 
 def mocks(vm, *args, model='{"delivery":"FULL","materiality":"SUBSTANTIVE"}', status=200, **kwargs):
@@ -41,15 +41,15 @@ def mocks(vm, *args, model='{"delivery":"FULL","materiality":"SUBSTANTIVE"}', st
                   "amount": kwargs.get("amount", AMOUNT), "repo": kwargs.get("repo", "impactrail/demo"),
                   "artifact": kwargs.get("artifact", ARTIFACT), "artifact_sha256": kwargs.get("artifact_sha256", ARTIFACT_SHA256)}
         args = (values["beneficiary"], values["amount"], values["repo"], values["artifact"], values["artifact_sha256"])
-    repo, commit, compare, artifact, proposal = source_payloads(*args)
+    repo, commit, compare, artifact, release = source_payloads(*args)
     vm._web_mocks.clear()
     vm._llm_mocks.clear()
     vm.mock_web(r"api\.github\.com/repos/impactrail/demo/commits/", {"status": status, "body": json.dumps(commit)})
     vm.mock_web(r"api\.github\.com/repos/impactrail/demo/compare/", {"status": status, "body": json.dumps(compare)})
     vm.mock_web(r"api\.github\.com/repos/impactrail/demo$", {"status": status, "body": json.dumps(repo)})
     vm.mock_web(r"raw\.githubusercontent\.com/impactrail/demo/", {"status": status, "body": artifact})
-    vm.mock_web(r"testnet\.hub\.snapshot\.org/graphql", {"status": status, "body": json.dumps({"data": {"proposal": proposal}})})
-    vm.mock_llm("IMPACT_RAIL_V3", model)
+    vm.mock_web(r"api\.github\.com/repos/impactrail/demo/releases/tags/", {"status": status, "body": json.dumps(release)})
+    vm.mock_llm("IMPACT_RAIL_V4", model)
 
 
 @pytest.fixture
@@ -76,7 +76,7 @@ def fund(vm, c, beneficiary=BENEFICIARY, amount=AMOUNT, attached=None):
     vm.value = value
     vm.deal(vm._contract_address, vm._balances.get(vm._contract_address, 0) + value)
     try:
-        return c.create_grant(beneficiary, amount, "impactrail", "demo", BASE, TARGET, ARTIFACT_PATH, ARTIFACT_SHA256, "impactrail.eth", PID,
+        return c.create_grant(beneficiary, amount, "impactrail", "demo", BASE, TARGET, ARTIFACT_PATH, ARTIFACT_SHA256, RELEASE,
                               "Publish a reproducible public-good release", 2, 2, COVERAGE, 180, 5000)
     except Exception:
         vm.revert(snap)
@@ -99,8 +99,8 @@ def capture_transfer(vm):
 def test_constructor_and_sealed_config(ctx):
     _, c = ctx
     config = c.get_config()
-    assert config["version"] == "IMPACT_RAIL_V3" and config["profile"] == "testnet"
-    assert config["sources"] == ["github-api", "github-raw-at-commit", "snapshot-hub"]
+    assert config["version"] == "IMPACT_RAIL_V4" and config["profile"] == "testnet"
+    assert config["sources"] == ["github-api", "github-raw-at-commit", "github-release"]
 
 
 def test_verified_path_and_accounting(ctx):
@@ -176,7 +176,7 @@ def test_negative_inputs_fail_closed(ctx, case):
         vm.value = AMOUNT
         vm.deal(vm._contract_address, AMOUNT)
         with pytest.raises(Exception, match="INVALID_COVERAGE_WINDOW"):
-            c.create_grant(BENEFICIARY, AMOUNT, "impactrail", "demo", BASE, TARGET, ARTIFACT_PATH, ARTIFACT_SHA256, "impactrail.eth", PID, "x", 2, 2, COVERAGE, 30, 5000)
+            c.create_grant(BENEFICIARY, AMOUNT, "impactrail", "demo", BASE, TARGET, ARTIFACT_PATH, ARTIFACT_SHA256, RELEASE, "x", 2, 2, COVERAGE, 30, 5000)
         vm.value = 0
         return
     if case == "commit":
@@ -184,7 +184,7 @@ def test_negative_inputs_fail_closed(ctx, case):
         vm.value = AMOUNT
         vm.deal(vm._contract_address, AMOUNT)
         with pytest.raises(Exception, match="INVALID_COMMIT_SHA"):
-            c.create_grant(BENEFICIARY, AMOUNT, "impactrail", "demo", "0x" + BASE, TARGET, ARTIFACT_PATH, ARTIFACT_SHA256, "impactrail.eth", PID, "x", 2, 2, COVERAGE, 180, 5000)
+            c.create_grant(BENEFICIARY, AMOUNT, "impactrail", "demo", "0x" + BASE, TARGET, ARTIFACT_PATH, ARTIFACT_SHA256, RELEASE, "x", 2, 2, COVERAGE, 180, 5000)
         vm.value = 0
         return
     if case in ("artifact_path", "artifact_digest"):
@@ -192,7 +192,7 @@ def test_negative_inputs_fail_closed(ctx, case):
         vm.value = AMOUNT
         vm.deal(vm._contract_address, AMOUNT)
         args = [BENEFICIARY, AMOUNT, "impactrail", "demo", BASE, TARGET, ARTIFACT_PATH, ARTIFACT_SHA256,
-                "impactrail.eth", PID, "x", 2, 2, COVERAGE, 180, 5000]
+                RELEASE, "x", 2, 2, COVERAGE, 180, 5000]
         args[6 if case == "artifact_path" else 7] = "../secret" if case == "artifact_path" else "A" * 64
         with pytest.raises(Exception, match="INVALID_ARTIFACT_PATH|INVALID_ARTIFACT_DIGEST"):
             c.create_grant(*args)
@@ -201,15 +201,15 @@ def test_negative_inputs_fail_closed(ctx, case):
     if case == "model":
         mocks(vm, model='{"delivery":"FULL","materiality":"SUBSTANTIVE","amount":1}')
     if case == "duplicate_marker":
-        repo, commit, compare, artifact, proposal = source_payloads()
-        proposal["body"] += "\nimpactrail_amount_wei: 2"
+        repo, commit, compare, artifact, release = source_payloads()
+        release["body"] += "\nimpactrail_amount_wei: 2"
         vm._web_mocks.clear()
         vm.mock_web(r"api\.github\.com/repos/impactrail/demo/commits/", {"status": 200, "body": json.dumps(commit)})
         vm.mock_web(r"api\.github\.com/repos/impactrail/demo/compare/", {"status": 200, "body": json.dumps(compare)})
         vm.mock_web(r"api\.github\.com/repos/impactrail/demo$", {"status": 200, "body": json.dumps(repo)})
         vm.mock_web(r"raw\.githubusercontent\.com/impactrail/demo/", {"status": 200, "body": artifact})
-        vm.mock_web(r"testnet\.hub\.snapshot\.org/graphql", {"status": 200, "body": json.dumps({"data": {"proposal": proposal}})})
-        vm.mock_llm("IMPACT_RAIL_V3", '{"delivery":"FULL","materiality":"SUBSTANTIVE"}')
+        vm.mock_web(r"api\.github\.com/repos/impactrail/demo/releases/tags/", {"status": 200, "body": json.dumps(release)})
+        vm.mock_llm("IMPACT_RAIL_V4", '{"delivery":"FULL","materiality":"SUBSTANTIVE"}')
     grant_id = fund(vm, c)
     assert c.evaluate_grant(grant_id) == "INSUFFICIENT_EVIDENCE"
     assert c.get_grant(grant_id)["state"] == "INSUFFICIENT_EVIDENCE"
