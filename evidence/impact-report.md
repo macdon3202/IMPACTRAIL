@@ -9,3 +9,6 @@ or inconsistent evidence, and derives payout accounting deterministically.
 
 Release note: the canonical artifact is now independently retrieved from its
 commit-pinned raw GitHub URL during the V3 verification path.
+
+V4 attests this same artifact through a published GitHub Release whose target
+commit, tag and markers are independently fetched by validators.
