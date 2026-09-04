@@ -32,8 +32,8 @@ not deployed yet.
 ## Before contract deployment
 
 1. Run the lint command and record the exact source SHA-256.
-2. The contract has been deployed with constructor argument `"testnet"`; retain
-   the exact deployment transaction hash from Studio Explorer.
+2. Deploy the current V2 source with no constructor arguments; retain the exact
+   deployment transaction hash from Studio Explorer.
 3. Reconfirm the deployed source and constructor against the source manifest.
 4. The local frontend now targets the exact deployed address and has rebuilt.
 

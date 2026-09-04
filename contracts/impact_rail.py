@@ -336,10 +336,9 @@ class ImpactRail(gl.Contract):
     sponsor_claimable: u256
     outbound_requested: u256
 
-    def __init__(self, profile: str = "testnet"):
-        require(profile in ("testnet", "production"), "INVALID_PROFILE")
+    def __init__(self):
         self.deployer = gl.message.sender_address
-        self.profile = profile
+        self.profile = "testnet"
         self.grant_count = u256(0)
         self.deposited = u256(0)
         self.locked = u256(0)

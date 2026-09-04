@@ -7,11 +7,9 @@ not be used for a funded lifecycle:
 0x2c1b0842da58927d1653614DB29D36053e63E487
 ```
 
-It was constructed with one argument:
-
-```text
-"testnet"
-```
+The superseded V1 deployment used a profile argument. The current V2 source has
+no constructor inputs: deploy it with an empty constructor form. Its Studionet
+evidence window is fixed to 120–900 seconds.
 
 That profile intentionally limits the evidence window to 120–900 seconds for a
 short Studionet demonstration. A production profile requires a 1–180 day
@@ -26,7 +24,7 @@ Deployment transaction:
 
 Studio Explorer shows `FINALIZED`, GenVM `SUCCESS` and consensus `Accepted`.
 Those receipt signals do not erase the npm binding defect found before live
-funding. Deploy the current `IMPACT_RAIL_V2` source with `"testnet"`, then update
+funding. Deploy the current `IMPACT_RAIL_V2` source with no arguments, then update
 the frontend address.
 The frontend will refuse writes to an address whose `get_config().version` is
 not `IMPACT_RAIL_V1`.

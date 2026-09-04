@@ -30,3 +30,6 @@ npm run build
 The test fixtures are synthetic canonical API responses for Direct Mode only;
 they do not claim live GitHub, npm, Snapshot or Studionet evidence. See
 `docs/RELEASE_EVIDENCE.md` for the honest release checklist.
+
+The current V2 contract has no constructor inputs. Its short Studionet evidence
+window is fixed at 120–900 seconds.

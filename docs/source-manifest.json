@@ -1,9 +1,9 @@
 {
   "contract": {
     "path": "contracts/impact_rail.py",
-    "sha256": "a12aafbdd450936420622bd0e8bfe319f0168b5ffb5f070615d5a974ff23d607",
+    "sha256": "7e4a68f6e09948ea25bf7c03b96738d9599e4534425a512307b9deae90258af3",
     "version": "IMPACT_RAIL_V2",
-    "constructor": ["testnet"]
+    "constructor": []
   },
   "frontend": {
     "logo": "frontend/public/impactrail-logo.png",

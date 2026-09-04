@@ -56,7 +56,7 @@ def mocks(vm, *args, model='{"delivery":"FULL","materiality":"SUBSTANTIVE"}', st
 def ctx(direct_vm, direct_deploy):
     vm = direct_vm
     vm.warp("2026-09-04T00:00:00Z")
-    c = direct_deploy(SOURCE, "testnet")
+    c = direct_deploy(SOURCE)
     mocks(vm)
     return vm, c
 
