@@ -1,0 +1,29 @@
+{
+  "contract": {
+    "path": "contracts/impact_rail.py",
+    "sha256": "a12aafbdd450936420622bd0e8bfe319f0168b5ffb5f070615d5a974ff23d607",
+    "version": "IMPACT_RAIL_V2",
+    "constructor": ["testnet"]
+  },
+  "frontend": {
+    "logo": "frontend/public/impactrail-logo.png",
+    "built_index_sha256": "05c320a32b32faa23098017b11e74af8e77104b87743695e651779f5546aa2d9",
+    "built_bundle_sha256": "7d39a52cb2a75bded619d487a8a42bb3db9e36117851ac60a7f5337571e8e2af"
+  },
+  "deployment": {
+    "network": "studionet",
+    "address": "0x2c1b0842da58927d1653614DB29D36053e63E487",
+    "transaction_hash": "0x7cdd075f71821d9f60e3a264d9f4310b3b197a1fda299f10c608374f0c9ba8cd",
+    "constructor": ["testnet"],
+    "status": "superseded-before-live-lifecycle",
+    "readback": {
+      "version": "IMPACT_RAIL_V1",
+      "profile": "testnet",
+      "testnet_window_seconds": "120-900",
+      "sources": ["github-api", "npm-registry", "snapshot-hub"],
+      "payout_policy": "VERIFIED=100%; PARTIAL=sealed bps; REJECTED/EXPIRED=sponsor refund"
+    }
+  },
+  "live_evidence": null,
+  "note": "V1 deployment execution/readback are verified but V1 is superseded: its npm acquisition did not bind registry gitHead to the target commit. V2 fixes this and is not deployed yet."
+}
