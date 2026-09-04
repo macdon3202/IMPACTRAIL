@@ -1,8 +1,8 @@
 {
   "contract": {
     "path": "contracts/impact_rail.py",
-    "sha256": "7e4a68f6e09948ea25bf7c03b96738d9599e4534425a512307b9deae90258af3",
-    "version": "IMPACT_RAIL_V2",
+    "sha256": "8508ca703b3ac65db240d2f819de94d5e966a93601036add0602cb889c650cc9",
+    "version": "IMPACT_RAIL_V3",
     "constructor": []
   },
   "frontend": {
@@ -10,26 +10,18 @@
     "built_index_sha256": "dc80eedf03ab4696c355e7183b787f1151916f053828599d84f4ef83811f2820",
     "built_bundle_sha256": "460fac8cc1a27b16965c7c3e93a8640e76f7d31ee66f676c72de49c8f9ea430c"
   },
-  "deployment": {
-    "network": "studionet",
+  "deployment": null,
+  "superseded_deployments": [{
     "address": "0x39e5Dc71024E358474EFC78fBC880213Ef1d1caf",
     "transaction_hash": "0x60c4befc6a73537648ccf24d69b04d59bccc8bfe9af059a02c103e46a87f201e",
-    "constructor": [],
-    "status": "active-awaiting-live-lifecycle",
-    "readback": {
-      "version": "IMPACT_RAIL_V2",
-      "profile": "testnet",
-      "testnet_window_seconds": "120-900",
-      "sources": ["github-api", "npm-registry", "snapshot-hub"],
-      "payout_policy": "VERIFIED=100%; PARTIAL=sealed bps; REJECTED/EXPIRED=sponsor refund"
-    }
-  },
-  "superseded_deployments": [{
+    "version": "IMPACT_RAIL_V2",
+    "reason": "replaced before funding to remove the npm publication dependency; no live grant was funded"
+  }, {
     "address": "0x2c1b0842da58927d1653614DB29D36053e63E487",
     "transaction_hash": "0x7cdd075f71821d9f60e3a264d9f4310b3b197a1fda299f10c608374f0c9ba8cd",
     "version": "IMPACT_RAIL_V1",
     "reason": "npm packument time and gitHead were not bound correctly; no live grant was funded"
   }],
   "live_evidence": null,
-  "note": "V2 deployment execution and public config/accounting readback are verified. No live funded grant lifecycle is claimed yet."
+  "note": "V3 passes local gates and awaits deployment. No V3 live lifecycle is claimed yet."
 }

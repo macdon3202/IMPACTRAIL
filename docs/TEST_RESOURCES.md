@@ -5,7 +5,7 @@ official sources. They are not evidence of a live repository or vote.
 
 - GitHub: `https://api.github.com/repos/{owner}/{repo}`, `/commits/{sha}` and
   `/compare/{base}...{target}`.
-- npm: `https://registry.npmjs.org/{package}/{version}`.
+- raw artifact: `https://raw.githubusercontent.com/{owner}/{repo}/{target_commit}/{artifact_path}`.
 - Snapshot: `https://testnet.hub.snapshot.org/graphql` for the testnet profile;
   production uses the public Hub. The contract embeds the proposal query and
   validates the returned space, markers, vote finality and score policy.

@@ -2,7 +2,7 @@
 
 | Threat | Contract response | Direct check |
 |---|---|---|
-| Self-authored or substituted evidence | URLs are constructed from sealed identifiers; official API identity and version are checked | mismatched GitHub repository / npm repository |
+| Self-authored or substituted evidence | URLs are constructed from sealed identifiers; repository, exact commit, raw artifact path and computed SHA-256 are checked | mismatched repository / commit / artifact digest |
 | Snapshot vote edited or not final | Exact space/proposal, marker set, closed state, choices, final scores and quorum are required | marker mismatch and open vote |
 | Commit range too small | `ahead_by` and distinct contributors must meet sealed thresholds | below-threshold compare response |
 | Prompt injection or model overreach | bounded untrusted context; exact two-field schema; deterministic payout | injection text and extra output field |

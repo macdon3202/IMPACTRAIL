@@ -3,7 +3,7 @@
 ## Product boundary
 
 ImpactRail verifies one public-goods grant at a time. The grant has one sponsor,
-one beneficiary, one GitHub repository and commit range, one npm package/version,
+one beneficiary, one GitHub repository and commit range, one raw artifact path/digest,
 one Snapshot proposal and one exact native GEN deposit. It does not execute
 treasury payments, distribute ERC-20 tokens, accept images or accept arbitrary
 evidence URLs.
@@ -11,7 +11,7 @@ evidence URLs.
 ## Sealed terms
 
 The funding call seals beneficiary, amount, repository identifiers, base and
-target commits, npm release, Snapshot space/proposal, milestone text, minimum
+target commits, raw artifact path/SHA-256, Snapshot space/proposal, milestone text, minimum
 commit/contributor thresholds, coverage start, testnet deadline and partial
 payout basis points. Source URLs are derived inside the contract. The terms
 digest is append-only; stale or replayed results are rejected.
@@ -27,7 +27,7 @@ the record is `PAID`.
 ## Deterministic verdicts
 
 The observation schema has source-bound booleans for repository identity, commit
-binding, npm binding, Snapshot authorization and coverage, plus model fields
+binding, commit-scoped artifact binding, Snapshot authorization and coverage, plus model fields
 `delivery` and `materiality`. Any known source `NO` is `REJECTED`; unknown,
 transport failure, invalid schema or disagreement is retryable insufficient
 evidence; `FULL + SUBSTANTIVE` is `VERIFIED`; `PARTIAL + SUBSTANTIVE` is

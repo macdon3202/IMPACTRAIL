@@ -2,7 +2,8 @@
 # { "Depends": "py-genlayer:1jb45aa8ynh2a9c9xn3b7qqh8sm5q93hwfp7jqmwsfhh8jpz09h6" }
 """ImpactRail: a bounded, multi-source public-goods impact gate.
 
-The sponsor seals a grant against a GitHub commit range, an npm release and a
+The sponsor seals a grant against a GitHub commit range, a raw artifact at the
+target commit and a
 closed Snapshot vote.  Validators independently acquire those canonical
 records; the model may only classify delivery and materiality.  Payouts are
 derived by deterministic contract logic and every funded grant has a short,
@@ -17,9 +18,9 @@ from typing import Any
 from urllib.parse import quote
 from genlayer import *
 
-VERSION = "IMPACT_RAIL_V2"
+VERSION = "IMPACT_RAIL_V3"
 ZERO = "0x" + "0" * 40
-FIELDS = ("repo_identity", "commit_binding", "npm_binding", "snapshot_auth", "coverage", "delivery", "materiality")
+FIELDS = ("repo_identity", "commit_binding", "artifact_binding", "snapshot_auth", "coverage", "delivery", "materiality")
 BOOL_VALUES = ("YES", "NO", "UNKNOWN")
 DELIVERY_VALUES = ("FULL", "PARTIAL", "NONE", "UNKNOWN")
 MATERIALITY_VALUES = ("SUBSTANTIVE", "COSMETIC", "UNKNOWN")
@@ -81,8 +82,8 @@ def unique_json(pairs: list) -> dict:
 
 def empty_observation(reason: str) -> dict:
     result = {key: "UNKNOWN" for key in FIELDS}
-    result.update({"reason": reason, "raw_github_digest": "", "raw_npm_digest": "", "raw_snapshot_digest": "",
-                   "github_digest": "", "npm_digest": "", "snapshot_digest": ""})
+    result.update({"reason": reason, "raw_github_digest": "", "raw_artifact_digest": "", "raw_snapshot_digest": "",
+                   "github_digest": "", "artifact_digest": "", "snapshot_digest": ""})
     return result
 
 
@@ -95,7 +96,7 @@ def observation_valid(value: Any) -> bool:
         return False
     if not isinstance(value["reason"], str) or len(value["reason"]) > 120:
         return False
-    for key in ("raw_github_digest", "raw_npm_digest", "raw_snapshot_digest", "github_digest", "npm_digest", "snapshot_digest"):
+    for key in ("raw_github_digest", "raw_artifact_digest", "raw_snapshot_digest", "github_digest", "artifact_digest", "snapshot_digest"):
         if not isinstance(value[key], str) or (value[key] and (len(value[key]) != 64 or any(c not in "0123456789abcdef" for c in value[key]))):
             return False
     return True
@@ -124,28 +125,13 @@ def snapshot_url(sealed: dict) -> str:
 
 def source_urls(sealed: dict) -> tuple[str, str, str, str]:
     base = "https://api.github.com/repos/" + sealed["github_owner"] + "/" + sealed["github_repository"]
-    return (base, base + "/commits/" + sealed["target_commit"], base + "/compare/" + sealed["base_commit"] + "..." + sealed["target_commit"],
-            "https://registry.npmjs.org/" + quote(sealed["npm_package"], safe="@"))
-
-
-def parse_repo_url(value: Any) -> str:
-    if isinstance(value, dict):
-        value = value.get("url") or value.get("web") or value.get("directory")
-    if not isinstance(value, str):
-        return ""
-    value = value.strip().lower().rstrip("/")
-    for prefix in ("git+", "https://", "http://"):
-        if value.startswith(prefix):
-            value = value[len(prefix):]
-    if value.startswith("github.com/"):
-        value = value[11:]
-    if value.endswith(".git"):
-        value = value[:-4]
-    return value
+    raw = ("https://raw.githubusercontent.com/" + sealed["github_owner"] + "/" + sealed["github_repository"] + "/" +
+           sealed["target_commit"] + "/" + quote(sealed["artifact_path"], safe="/-._"))
+    return (base, base + "/commits/" + sealed["target_commit"], base + "/compare/" + sealed["base_commit"] + "..." + sealed["target_commit"], raw)
 
 
 def marker_map(body: str) -> dict:
-    keys = {"impactrail_repo", "impactrail_package", "impactrail_version", "impactrail_beneficiary", "impactrail_amount_wei"}
+    keys = {"impactrail_repo", "impactrail_target_commit", "impactrail_artifact_path", "impactrail_artifact_sha256", "impactrail_beneficiary", "impactrail_amount_wei"}
     result = {}
     for line in body.splitlines():
         key, sep, value = line.strip().partition(":")
@@ -180,25 +166,25 @@ def semantic(sealed: dict, context: dict) -> tuple[str, str]:
 def observe(sealed: dict) -> dict:
     obs = empty_observation("FETCH_FAILED")
     try:
-        repo_url, commit_url, compare_url, npm_url = source_urls(sealed)
-        responses = [gl.nondet.web.get(repo_url), gl.nondet.web.get(commit_url), gl.nondet.web.get(compare_url), gl.nondet.web.get(npm_url), gl.nondet.web.get(snapshot_url(sealed))]
+        repo_url, commit_url, compare_url, artifact_url = source_urls(sealed)
+        responses = [gl.nondet.web.get(repo_url), gl.nondet.web.get(commit_url), gl.nondet.web.get(compare_url), gl.nondet.web.get(artifact_url), gl.nondet.web.get(snapshot_url(sealed))]
         parsed = []
-        raw_parts = {"github": [], "npm": [], "snapshot": []}
+        raw_parts = {"github": [], "artifact": [], "snapshot": []}
         for index, response in enumerate(responses):
             if response.status != 200:
                 return dict(obs, reason="SOURCE_HTTP_" + str(response.status))
             if not 0 < len(response.body) <= 48000:
                 return dict(obs, reason="SOURCE_SIZE_LIMIT")
-            raw_parts["github" if index < 3 else "npm" if index == 3 else "snapshot"].append(response.body)
-            parsed.append(json.loads(response.body.decode("utf-8"), parse_float=str, object_pairs_hook=unique_json))
+            raw_parts["github" if index < 3 else "artifact" if index == 3 else "snapshot"].append(response.body)
+            parsed.append(response.body if index == 3 else json.loads(response.body.decode("utf-8"), parse_float=str, object_pairs_hook=unique_json))
         obs["raw_github_digest"] = hashlib.sha256(b"\x00".join(raw_parts["github"])).hexdigest()
-        obs["raw_npm_digest"] = hashlib.sha256(b"\x00".join(raw_parts["npm"])).hexdigest()
+        obs["raw_artifact_digest"] = hashlib.sha256(b"\x00".join(raw_parts["artifact"])).hexdigest()
         obs["raw_snapshot_digest"] = hashlib.sha256(b"\x00".join(raw_parts["snapshot"])).hexdigest()
-        repo, commit, comparison, npm, graph = parsed
-        if not all(isinstance(x, dict) for x in parsed):
+        repo, commit, comparison, artifact, graph = parsed
+        if not all(isinstance(x, dict) for x in (repo, commit, comparison, graph)) or not isinstance(artifact, bytes):
             return dict(obs, reason="SOURCE_RECORD_MISSING")
         obs["github_digest"] = digest({"repo": repo, "commit": commit, "compare": comparison})
-        obs["npm_digest"] = digest(npm)
+        obs["artifact_digest"] = hashlib.sha256(artifact).hexdigest()
         proposal = graph.get("data", {}).get("proposal") if isinstance(graph.get("data"), dict) else None
         obs["snapshot_digest"] = digest(proposal) if isinstance(proposal, dict) else ""
         expected_repo = sealed["github_owner"].lower() + "/" + sealed["github_repository"].lower()
@@ -229,29 +215,18 @@ def observe(sealed: dict) -> dict:
             obs["coverage"] = "NO"
             return dict(obs, reason="CONTRIBUTOR_COVERAGE_BELOW_THRESHOLD")
         obs["coverage"] = "YES"
-        versions = npm.get("versions") if isinstance(npm.get("versions"), dict) else {}
-        release = versions.get(sealed["npm_version"])
-        if not isinstance(release, dict):
-            obs["npm_binding"] = "NO"
-            return dict(obs, reason="NPM_RELEASE_MISSING")
-        repository = parse_repo_url(release.get("repository") or npm.get("repository"))
-        times = npm.get("time") if isinstance(npm.get("time"), dict) else {}
-        if (npm.get("name") != sealed["npm_package"] or release.get("name") != sealed["npm_package"] or
-                release.get("version") != sealed["npm_version"] or str(release.get("gitHead", "")).lower() != sealed["target_commit"] or
-                sealed["npm_version"] not in times or repository != expected_repo):
-            obs["npm_binding"] = "NO"
-            return dict(obs, reason="NPM_RELEASE_MISMATCH")
-        if timestamp(times.get(sealed["npm_version"])) < sealed["coverage_start"]:
-            obs["npm_binding"] = "NO"
-            return dict(obs, reason="NPM_RELEASE_OUTSIDE_COVERAGE")
-        obs["npm_binding"] = "YES"
+        if hashlib.sha256(artifact).hexdigest() != sealed["artifact_sha256"]:
+            obs["artifact_binding"] = "NO"
+            return dict(obs, reason="GITHUB_ARTIFACT_DIGEST_MISMATCH")
+        obs["artifact_binding"] = "YES"
         if not isinstance(proposal, dict):
             return dict(obs, reason="SNAPSHOT_RECORD_MISSING")
         markers = marker_map(proposal.get("body", ""))
         space = proposal.get("space") or {}
         if (proposal.get("id") != sealed["snapshot_proposal_id"] or space.get("id") != sealed["snapshot_space"] or
-                markers["impactrail_repo"].lower() != expected_repo or markers["impactrail_package"] != sealed["npm_package"] or
-                markers["impactrail_version"] != sealed["npm_version"] or markers["impactrail_beneficiary"].lower() != address_text(Address(sealed["beneficiary"])).lower() or
+                markers["impactrail_repo"].lower() != expected_repo or markers["impactrail_target_commit"].lower() != sealed["target_commit"] or
+                markers["impactrail_artifact_path"] != sealed["artifact_path"] or markers["impactrail_artifact_sha256"].lower() != sealed["artifact_sha256"] or
+                markers["impactrail_beneficiary"].lower() != address_text(Address(sealed["beneficiary"])).lower() or
                 markers["impactrail_amount_wei"] != sealed["amount_wei"]):
             return dict(obs, reason="SNAPSHOT_MARKER_MISMATCH")
         if proposal.get("state") != "closed" or proposal.get("type") != "single-choice" or proposal.get("choices") != ["For", "Against", "Abstain"] or proposal.get("scores_state") != "final":
@@ -264,7 +239,8 @@ def observe(sealed: dict) -> dict:
         if any(not x.is_finite() or x < 0 for x in numbers + [quorum]) or not (numbers[0] > numbers[1] and numbers[0] > numbers[2] and sum(numbers) >= max(quorum, Decimal(1))):
             return dict(obs, reason="SNAPSHOT_APPROVAL_FAILED")
         obs["snapshot_auth"] = "YES"
-        delivery, materiality = semantic(sealed, {"milestone": sealed["milestone_statement"], "commit_message": (commit.get("commit") or {}).get("message", ""), "compare": {"ahead_by": comparison.get("ahead_by"), "commits": commits}, "npm_description": release.get("description", "")})
+        artifact_text = artifact.decode("utf-8")
+        delivery, materiality = semantic(sealed, {"milestone": sealed["milestone_statement"], "commit_message": (commit.get("commit") or {}).get("message", ""), "compare": {"ahead_by": comparison.get("ahead_by"), "commits": commits}, "artifact_path": sealed["artifact_path"], "artifact_text": artifact_text})
         obs["delivery"], obs["materiality"] = delivery, materiality
         obs["reason"] = "" if delivery != "UNKNOWN" and materiality != "UNKNOWN" else "MODEL_UNRESOLVED"
         return obs
@@ -362,7 +338,7 @@ class ImpactRail(gl.Contract):
         return "REGISTERED"
 
     def _build_terms(self, beneficiary: str, amount_wei: u256, github_owner: str, github_repository: str, base_commit: str, target_commit: str,
-                     npm_package: str, npm_version: str, snapshot_space: str, snapshot_proposal_id: str, milestone_statement: str,
+                     artifact_path: str, artifact_sha256: str, snapshot_space: str, snapshot_proposal_id: str, milestone_statement: str,
                      minimum_commits: u256, minimum_contributors: u256, coverage_start: u256, duration: u256, partial_payout_bps: u256) -> dict:
         require(hex_value(beneficiary, 42) and beneficiary.lower() != ZERO, "INVALID_BENEFICIARY")
         require(self.wallets.get(Address(beneficiary), False), "BENEFICIARY_NOT_REGISTERED")
@@ -370,7 +346,10 @@ class ImpactRail(gl.Contract):
         require(amount_wei > 0 and gl.message.value == amount_wei, "EXACT_VALUE_REQUIRED")
         require(self._valid_token(github_owner, 39) and self._valid_token(github_repository, 100) and all(c not in github_owner + github_repository for c in "/:#?"), "INVALID_GITHUB_REPOSITORY")
         require(sha_value(base_commit) and sha_value(target_commit) and base_commit.lower() != target_commit.lower(), "INVALID_COMMIT_SHA")
-        require(self._valid_token(npm_package, 214) and self._valid_token(npm_version, 64) and all(c not in npm_package + npm_version for c in " /:#?"), "INVALID_NPM_RELEASE")
+        require(self._valid_token(artifact_path, 240) and not artifact_path.startswith("/") and ".." not in artifact_path.split("/") and
+                all(c not in artifact_path for c in "\\:#?"), "INVALID_ARTIFACT_PATH")
+        require(len(artifact_sha256) == 64 and artifact_sha256 == artifact_sha256.lower() and
+                all(c in "0123456789abcdef" for c in artifact_sha256), "INVALID_ARTIFACT_DIGEST")
         require(self._valid_token(snapshot_space, 96) and snapshot_space == snapshot_space.lower() and all(c in "abcdefghijklmnopqrstuvwxyz0123456789-." for c in snapshot_space), "INVALID_SNAPSHOT_SPACE")
         require(hex_value(snapshot_proposal_id, 66) and snapshot_proposal_id == snapshot_proposal_id.lower(), "INVALID_SNAPSHOT_PROPOSAL")
         require(self._valid_token(milestone_statement, 500), "INVALID_MILESTONE")
@@ -378,16 +357,16 @@ class ImpactRail(gl.Contract):
         require(100 <= partial_payout_bps <= 10000, "INVALID_PARTIAL_PAYOUT")
         return {"version": VERSION, "contract": address_text(gl.message.contract_address), "profile": self.profile, "beneficiary": beneficiary.lower(), "amount_wei": str(amount_wei),
                 "github_owner": github_owner, "github_repository": github_repository, "base_commit": base_commit.lower(), "target_commit": target_commit.lower(),
-                "npm_package": npm_package, "npm_version": npm_version, "snapshot_space": snapshot_space, "snapshot_proposal_id": snapshot_proposal_id,
+                "artifact_path": artifact_path, "artifact_sha256": artifact_sha256, "snapshot_space": snapshot_space, "snapshot_proposal_id": snapshot_proposal_id,
                 "milestone_statement": milestone_statement, "minimum_commits": int(minimum_commits), "minimum_contributors": int(minimum_contributors),
                 "coverage_start": int(coverage_start), "duration_seconds": int(duration), "partial_payout_bps": int(partial_payout_bps)}
 
     @gl.public.write.payable
     def create_grant(self, beneficiary: str, amount_wei: u256, github_owner: str, github_repository: str, base_commit: str, target_commit: str,
-                     npm_package: str, npm_version: str, snapshot_space: str, snapshot_proposal_id: str, milestone_statement: str,
+                     artifact_path: str, artifact_sha256: str, snapshot_space: str, snapshot_proposal_id: str, milestone_statement: str,
                      minimum_commits: u256, minimum_contributors: u256, coverage_start: u256, duration: u256, partial_payout_bps: u256) -> u256:
         sender = self._external_sender()
-        terms = self._build_terms(beneficiary, amount_wei, github_owner, github_repository, base_commit, target_commit, npm_package, npm_version,
+        terms = self._build_terms(beneficiary, amount_wei, github_owner, github_repository, base_commit, target_commit, artifact_path, artifact_sha256,
                                   snapshot_space, snapshot_proposal_id, milestone_statement, minimum_commits, minimum_contributors, coverage_start, duration, partial_payout_bps)
         key = digest({"sponsor": address_text(sender), "terms": terms})
         require(key not in self.grant_keys, "DUPLICATE_GRANT")
@@ -503,7 +482,7 @@ class ImpactRail(gl.Contract):
 
     @gl.public.view
     def get_config(self) -> dict:
-        return {"version": VERSION, "profile": self.profile, "testnet_window_seconds": "120-900", "sources": ["github-api", "npm-registry", "snapshot-hub"], "payout_policy": "VERIFIED=100%; PARTIAL=sealed bps; REJECTED/EXPIRED=sponsor refund"}
+        return {"version": VERSION, "profile": self.profile, "testnet_window_seconds": "120-900", "sources": ["github-api", "github-raw-at-commit", "snapshot-hub"], "payout_policy": "VERIFIED=100%; PARTIAL=sealed bps; REJECTED/EXPIRED=sponsor refund"}
 
     @gl.public.view
     def get_grant(self, grant_id: u256) -> dict:
@@ -524,13 +503,12 @@ class ImpactRail(gl.Contract):
         return {"registered": self.wallets.get(party, False), "count": count, "ids": [self.account_ids[account.lower() + ":" + str(i)] for i in range(int(offset), min(int(offset) + 20, int(count)))]}
 
     @gl.public.view
-    def find_grant(self, sponsor: str, beneficiary: str, target_commit: str, npm_package: str, npm_version: str) -> dict:
+    def find_grant(self, sponsor: str, beneficiary: str, target_commit: str, artifact_path: str, artifact_sha256: str) -> dict:
         require(hex_value(sponsor, 42) and hex_value(beneficiary, 42), "INVALID_ADDRESS")
-        needle = {"sponsor": sponsor.lower(), "beneficiary": beneficiary.lower(), "target_commit": target_commit.lower(), "npm_package": npm_package, "npm_version": npm_version}
         for i in range(int(self.grant_count)):
             item = self.grants[u256(i)]
             terms = json.loads(item.terms)
-            if all(terms.get(k) == v for k, v in (("beneficiary", beneficiary.lower()), ("target_commit", target_commit.lower()), ("npm_package", npm_package), ("npm_version", npm_version))) and address_text(item.sponsor).lower() == sponsor.lower():
+            if all(terms.get(k) == v for k, v in (("beneficiary", beneficiary.lower()), ("target_commit", target_commit.lower()), ("artifact_path", artifact_path), ("artifact_sha256", artifact_sha256))) and address_text(item.sponsor).lower() == sponsor.lower():
                 return {"found": True, "id": i}
         return {"found": False, "id": 0}
 

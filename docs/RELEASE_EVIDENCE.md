@@ -1,10 +1,19 @@
 # Release evidence and deployment gates
 
+## V3 — current deployment candidate
+
+V3 removes the npm publication dependency. Validators construct a GitHub raw
+URL from the sealed repository, exact target commit and artifact path, compute
+SHA-256 over the fetched bytes and compare it with the sealed digest. Snapshot
+must repeat the repository, target commit, artifact path, digest, beneficiary
+and amount. GenVM lint, 16 Direct Mode tests and the production frontend build
+pass locally. V3 is not yet deployed and no live V3 lifecycle is claimed.
+
 ## Completed locally
 
 - Contract source compiles with Python.
 - `genvm-lint check contracts/impact_rail.py --json` passes lint and schema.
-- Direct Mode: 14 tests pass, including verified, partial, mismatch refund,
+- Direct Mode: 16 tests pass, including verified, partial, mismatch refund,
   HTTP failure/expiry, malformed model, prompt injection, unauthorized calls,
   duplicate withdrawal and accounting readback.
 - Frontend `npm run build` passes with the supplied logo asset.

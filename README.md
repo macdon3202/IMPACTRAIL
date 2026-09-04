@@ -3,7 +3,7 @@
 ImpactRail is a GenLayer intelligent contract and companion frontend for a
 narrow public-goods grant workflow. A sponsor locks exact native GEN against a
 beneficiary and a sealed milestone. The contract constructs and checks three
-canonical sources: GitHub API commit history, npm registry release metadata,
+canonical sources: GitHub API commit history, raw GitHub content at an exact commit,
 and a closed Snapshot proposal. Validators acquire the sources independently;
 the bounded model observes only delivery/materiality. The contract derives the
 verdict and payout, so a contributor cannot self-author evidence or choose the
