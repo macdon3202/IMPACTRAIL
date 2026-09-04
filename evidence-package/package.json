@@ -1,0 +1,14 @@
+{
+  "name": "impactrail-evidence-2026",
+  "version": "1.0.0",
+  "description": "Canonical npm release fixture for the ImpactRail public-goods verification lifecycle",
+  "license": "MIT",
+  "type": "module",
+  "main": "index.js",
+  "files": ["index.js", "README.md"],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/macdon3202/IMPACTRAIL.git"
+  },
+  "publishConfig": {"access": "public"}
+}
