@@ -7,23 +7,29 @@
   },
   "frontend": {
     "logo": "frontend/public/impactrail-logo.png",
-    "built_index_sha256": "05c320a32b32faa23098017b11e74af8e77104b87743695e651779f5546aa2d9",
-    "built_bundle_sha256": "7d39a52cb2a75bded619d487a8a42bb3db9e36117851ac60a7f5337571e8e2af"
+    "built_index_sha256": "dc80eedf03ab4696c355e7183b787f1151916f053828599d84f4ef83811f2820",
+    "built_bundle_sha256": "460fac8cc1a27b16965c7c3e93a8640e76f7d31ee66f676c72de49c8f9ea430c"
   },
   "deployment": {
     "network": "studionet",
-    "address": "0x2c1b0842da58927d1653614DB29D36053e63E487",
-    "transaction_hash": "0x7cdd075f71821d9f60e3a264d9f4310b3b197a1fda299f10c608374f0c9ba8cd",
-    "constructor": ["testnet"],
-    "status": "superseded-before-live-lifecycle",
+    "address": "0x39e5Dc71024E358474EFC78fBC880213Ef1d1caf",
+    "transaction_hash": "0x60c4befc6a73537648ccf24d69b04d59bccc8bfe9af059a02c103e46a87f201e",
+    "constructor": [],
+    "status": "active-awaiting-live-lifecycle",
     "readback": {
-      "version": "IMPACT_RAIL_V1",
+      "version": "IMPACT_RAIL_V2",
       "profile": "testnet",
       "testnet_window_seconds": "120-900",
       "sources": ["github-api", "npm-registry", "snapshot-hub"],
       "payout_policy": "VERIFIED=100%; PARTIAL=sealed bps; REJECTED/EXPIRED=sponsor refund"
     }
   },
+  "superseded_deployments": [{
+    "address": "0x2c1b0842da58927d1653614DB29D36053e63E487",
+    "transaction_hash": "0x7cdd075f71821d9f60e3a264d9f4310b3b197a1fda299f10c608374f0c9ba8cd",
+    "version": "IMPACT_RAIL_V1",
+    "reason": "npm packument time and gitHead were not bound correctly; no live grant was funded"
+  }],
   "live_evidence": null,
-  "note": "V1 deployment execution/readback are verified but V1 is superseded: its npm acquisition did not bind registry gitHead to the target commit. V2 fixes this and is not deployed yet."
+  "note": "V2 deployment execution and public config/accounting readback are verified. No live funded grant lifecycle is claimed yet."
 }

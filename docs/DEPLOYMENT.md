@@ -11,9 +11,9 @@ The superseded V1 deployment used a profile argument. The current V2 source has
 no constructor inputs: deploy it with an empty constructor form. Its Studionet
 evidence window is fixed to 120–900 seconds.
 
-That profile intentionally limits the evidence window to 120–900 seconds for a
-short Studionet demonstration. A production profile requires a 1–180 day
-window. There is no configuration transaction after construction.
+The fixed configuration limits the evidence window to 120–900 seconds for a
+short Studionet demonstration. There is no configuration transaction after
+construction.
 
 The address is set in the local frontend and the production build passes.
 Deployment transaction:
@@ -24,10 +24,20 @@ Deployment transaction:
 
 Studio Explorer shows `FINALIZED`, GenVM `SUCCESS` and consensus `Accepted`.
 Those receipt signals do not erase the npm binding defect found before live
-funding. Deploy the current `IMPACT_RAIL_V2` source with no arguments, then update
-the frontend address.
+funding. It is retained only as honest deployment history.
+
+## Active V2
+
+```text
+Address: 0x39e5Dc71024E358474EFC78fBC880213Ef1d1caf
+Deploy tx: 0x60c4befc6a73537648ccf24d69b04d59bccc8bfe9af059a02c103e46a87f201e
+Constructor: no inputs
+```
+
+The local frontend targets this V2 address. Explorer and public method readback
+both confirm `IMPACT_RAIL_V2`; accounting is zero before live funding.
 The frontend will refuse writes to an address whose `get_config().version` is
-not `IMPACT_RAIL_V1`.
+not `IMPACT_RAIL_V2`.
 
 Live follow-up is still required: register a beneficiary, fund a small grant,
 evaluate it, inspect the consensus/execution result, read the grant and

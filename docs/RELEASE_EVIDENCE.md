@@ -4,7 +4,7 @@
 
 - Contract source compiles with Python.
 - `genvm-lint check contracts/impact_rail.py --json` passes lint and schema.
-- Direct Mode: 13 tests pass, including verified, partial, mismatch refund,
+- Direct Mode: 14 tests pass, including verified, partial, mismatch refund,
   HTTP failure/expiry, malformed model, prompt injection, unauthorized calls,
   duplicate withdrawal and accounting readback.
 - Frontend `npm run build` passes with the supplied logo asset.
@@ -26,14 +26,23 @@ This V1 deployment is superseded before any live grant was funded. Preparing a
 real npm resource exposed that the version endpoint did not supply the release
 time map and V1 did not bind npm `gitHead` to the sealed target commit. V2 now
 fetches the package packument, selects the sealed version, checks its release
-time and requires `gitHead == target_commit`. V2 passes all local gates but is
-not deployed yet.
+time and requires `gitHead == target_commit`. V2 passes all local gates and its
+active deployment is recorded below.
 
-## Before contract deployment
+## Active V2 deployment
+
+- Address: `0x39e5Dc71024E358474EFC78fBC880213Ef1d1caf`
+- Deploy transaction: `0x60c4befc6a73537648ccf24d69b04d59bccc8bfe9af059a02c103e46a87f201e`
+- Constructor inputs: none
+- Explorer: `FINALIZED`, GenVM `SUCCESS`, consensus `Accepted`
+- `get_config().version`: `IMPACT_RAIL_V2`
+- Public accounting readback: all ledgers and balance are zero before funding
+- Live funded grant lifecycle: not yet run
+
+## Deployment parity checks
 
 1. Run the lint command and record the exact source SHA-256.
-2. Deploy the current V2 source with no constructor arguments; retain the exact
-   deployment transaction hash from Studio Explorer.
+2. Preserve the V2 deployment transaction hash from Studio Explorer.
 3. Reconfirm the deployed source and constructor against the source manifest.
 4. The local frontend now targets the exact deployed address and has rebuilt.
 

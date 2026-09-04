@@ -11,11 +11,11 @@ recipient of a reward.
 
 ## Status
 
-The source has passed Python compilation, GenVM lint/schema validation, 13
-Direct Mode tests, and a production frontend build. It is not deployed by this
-repository. A live deployment address and live readback must be added after the
-deploying wallet transaction; the frontend intentionally remains disabled until
-`VITE_CONTRACT_ADDRESS` identifies an `IMPACT_RAIL_V2` contract.
+The source has passed Python compilation, GenVM lint/schema validation, 14
+Direct Mode tests, and a production frontend build. V2 is deployed on Studionet
+at `0x39e5Dc71024E358474EFC78fBC880213Ef1d1caf`; public configuration and zeroed
+pre-funding accounting have been read back. A funded live lifecycle remains to
+be run and is not claimed here.
 
 ## Local gates
 
