@@ -28,7 +28,12 @@ paths and found four contract issues plus a frontend receipt issue. Those fixes
 are now deployed as V5 at `0x6027309e88CB1f51f891Eea85436ad80347592DB`.
 Source parity and a complete PARTIAL lifecycle are verified: 500,000,000,000 wei
 went to each party and all reserves returned to zero. The V4 address remains
-historical evidence; the frontend accepts only V5.
+historical evidence; the frontend accepts only V5. Three direct V5 negative
+calls also finalized with the expected `NOT_CLAIMABLE`, `GRANT_TERMINAL` and
+`GRANT_NOT_FOUND` errors, while authoritative accounting remained unchanged.
+See `evidence-package/v5-live-lifecycle.json` and
+`evidence-package/v5-negative-calls.json`. This is not a claim that the complete
+outcome matrix was rerun live on V5.
 
 ## Local gates
 
@@ -44,5 +49,5 @@ The test fixtures are synthetic canonical API responses for Direct Mode only;
 they do not claim live GitHub, npm, Snapshot or Studionet evidence. See
 `docs/RELEASE_EVIDENCE.md` for the honest release checklist.
 
-The current V4 source has no constructor inputs. Its short Studionet evidence
+The current V5 source has no constructor inputs. Its short Studionet evidence
 window is fixed at 120–900 seconds.

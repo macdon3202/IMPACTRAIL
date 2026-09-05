@@ -1,0 +1,44 @@
+.verification {
+  margin-top: 52px;
+  padding: 30px;
+  border: 1px solid var(--line);
+  background: #fffef8;
+}
+
+.verification h3 {
+  margin: 0 0 10px;
+  font-size: 28px;
+}
+
+.verification > p:not(.kicker) {
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.verification small {
+  display: block;
+  margin-top: 20px;
+  color: var(--muted);
+  font: 11px/1.6 'DM Mono', monospace;
+}
+
+.evidence-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 22px;
+}
+
+.evidence-links a {
+  padding: 10px 13px;
+  border: 1px solid var(--ink);
+  color: inherit;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.evidence-links a:hover {
+  background: var(--deep);
+  color: white;
+}
