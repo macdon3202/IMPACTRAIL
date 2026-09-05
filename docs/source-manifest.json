@@ -1,6 +1,6 @@
 {
   "contract": {"path":"contracts/impact_rail.py","sha256":"a6adf413020ea7511b86526601db3a4b942db2e9507c329f8880e752916ec3e4","version":"IMPACT_RAIL_V5","constructor":[],"deployment":"0x6027309e88CB1f51f891Eea85436ad80347592DB"},
-  "frontend": {"logo":"frontend/public/impactrail-logo.png","built_index_sha256":"b48211e614c919539be0c28d763764ff50bde680a006ab209373e036779bd393","built_bundle_sha256":"11eb9b409a932c5383e6ca853a823511be82d1d5431ee5c13d122a021ebb8bb1","built_css_sha256":"bb2bb2577c2162bef7f411f0da0dc91cd0b4d156b9391a1d7c2555eb2968f7d8"},
+  "frontend": {"deployment":"https://impactrail.pages.dev","logo":"frontend/public/impactrail-logo.png","built_index_sha256":"b48211e614c919539be0c28d763764ff50bde680a006ab209373e036779bd393","built_bundle_sha256":"11eb9b409a932c5383e6ca853a823511be82d1d5431ee5c13d122a021ebb8bb1","built_css_sha256":"bb2bb2577c2162bef7f411f0da0dc91cd0b4d156b9391a1d7c2555eb2968f7d8"},
   "superseded_deployments": [
     {"address":"0x377A27B57116eB21b2781879348676E4d71170F1","version":"IMPACT_RAIL_V4","reason":"live evaluation encountered an unidentified GitHub HTTP 403; grant expired and exact funds were returned"},
     {"address":"0x5f6EcEE07360624Daa2De584e4936B1c7623d2c2","version":"IMPACT_RAIL_V3","reason":"fixture exceeded the sealed response-size limit"},

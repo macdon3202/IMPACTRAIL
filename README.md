@@ -1,5 +1,7 @@
 # ImpactRail
 
+Live frontend: https://impactrail.pages.dev
+
 ImpactRail is a GenLayer intelligent contract and companion frontend for a
 narrow public-goods grant workflow. A sponsor locks exact native GEN against a
 beneficiary and a sealed milestone. The contract constructs and checks three
