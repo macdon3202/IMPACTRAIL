@@ -2,10 +2,11 @@ import {createClient,createAccount} from '../frontend/node_modules/genlayer-js/d
 import {studionet} from '../frontend/node_modules/genlayer-js/dist/chains/index.js';
 import {readFileSync,writeFileSync,existsSync} from 'node:fs';
 import {parse} from '../../TreasuryPayoutVerifier/scripts/testnet/node_modules/dotenv/lib/main.js';
-const address='0xb61678034F70E5aC688851c3Ab547f4E428E781e';
+const address=process.env.IMPACTRAIL_ADDRESS??'0xb61678034F70E5aC688851c3Ab547f4E428E781e';
 const A='0xFeD97e2aE1A8C1983b7cA206B3545e6A2c685E43', B='0xc67532aeF9D2879cBA9375a02E6217A3524657B8';
 const amount=1000000000000n;
-const path=new URL('./.state/live-matrix.json',import.meta.url);
+if(!/^0x[0-9a-fA-F]{40}$/.test(address))throw Error('INVALID_CONTRACT_ADDRESS');
+const path=new URL(address.toLowerCase()==='0xb61678034f70e5ac688851c3ab547f4e428e781e'?'./.state/live-matrix.json':'./.state/live-matrix-'+address.toLowerCase()+'.json',import.meta.url);
 const log=existsSync(path)?JSON.parse(readFileSync(path)):{address,actions:{},cases:{}};
 const encode=v=>JSON.stringify(v,(_,x)=>typeof x==='bigint'?String(x):x,2);
 const save=()=>writeFileSync(path,encode(log));
