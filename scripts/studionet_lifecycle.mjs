@@ -35,7 +35,12 @@ if(['register','fund','evaluate','withdraw'].includes(action)){
  if(action==='register')await send('register','B','register_wallet');
  if(action==='fund')await send('fund','A','create_grant',[B,amount,'macdon3202','IMPACTRAIL',base,target,artifactPath,artifactSha256,releaseTag,'Deliver ImpactRail V4 with deterministic custody and commit-pinned public evidence.',1n,1n,coverageStart,900n,5000n],amount);
  if(action==='evaluate')await send('evaluate','A','evaluate_grant',[0n]);
- if(action==='withdraw')await send('withdraw','B','withdraw',[0n]);return;
+ if(action==='withdraw'){
+  const current=await snapshot();
+  if(BigInt(current.grant?.beneficiary_due??0)>0n)await send('withdraw-beneficiary','B','withdraw',[0n]);
+  const afterBeneficiary=await snapshot();
+  if(BigInt(afterBeneficiary.grant?.sponsor_due??0)>0n)await send('withdraw-sponsor','A','withdraw',[0n]);
+ }return;
 }
 if(action==='recover'){
  let current=await snapshot();
@@ -51,7 +56,7 @@ if(action==='recover'){
  console.log(encode({recoveryPassed:passed,balanceDelta,final}));if(!passed)throw Error('RECOVERY_NOT_YET_VERIFIED');return;
 }
 if(action==='run'){
- const initial=await snapshot();if(initial.cfg.version!=='IMPACT_RAIL_V4')throw Error('WRONG_CONTRACT');
+ const initial=await snapshot();if(initial.cfg.version!=='IMPACT_RAIL_V5')throw Error('WRONG_CONTRACT');
  await send('register','B','register_wallet');
  await send('fund','A','create_grant',[B,amount,'macdon3202','IMPACTRAIL',base,target,artifactPath,artifactSha256,releaseTag,'Deliver ImpactRail V4 with deterministic custody and commit-pinned public evidence.',1n,1n,coverageStart,900n,5000n],amount);
  await send('evaluate','A','evaluate_grant',[0n]);let evaluated=await snapshot();if(evaluated.grant?.state==='INSUFFICIENT_EVIDENCE'){await send('retry','A','retry_grant',[0n]);evaluated=await snapshot();}if(evaluated.grant?.state!=='VERIFIED_CLAIMABLE')throw Error('NOT_VERIFIED '+encode(evaluated.grant));

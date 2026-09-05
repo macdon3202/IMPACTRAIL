@@ -25,8 +25,10 @@ maintainer, and the model's substantive-delivery judgment is an observation.
 
 The subsequent adversarial audit completed FULL, PARTIAL, REJECTED and EXPIRED
 paths and found four contract issues plus a frontend receipt issue. Those fixes
-are now V5 and await a new deployment. The V4 address above remains historical
-live evidence; the frontend refuses to treat it as V5.
+are now deployed as V5 at `0x6027309e88CB1f51f891Eea85436ad80347592DB`.
+Source parity and a complete PARTIAL lifecycle are verified: 500,000,000,000 wei
+went to each party and all reserves returned to zero. The V4 address remains
+historical evidence; the frontend accepts only V5.
 
 ## Local gates
 

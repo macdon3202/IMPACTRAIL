@@ -1,0 +1,142 @@
+{
+  "checkedAt": "2026-09-05T02:10:31.420Z",
+  "address": "0x6027309e88CB1f51f891Eea85436ad80347592DB",
+  "passed": true,
+  "sourceSha256": "a6adf413020ea7511b86526601db3a4b942db2e9507c329f8880e752916ec3e4",
+  "transactions": [
+    {
+      "name": "register",
+      "hash": "0x963d0a3451bc2411239d7ef1ecdadc1883fd0030775775e62d3563b41527cac3",
+      "status": "FINALIZED",
+      "execution": [
+        "SUCCESS",
+        "SUCCESS"
+      ],
+      "agree": 3,
+      "total": 5,
+      "passed": true
+    },
+    {
+      "name": "fund",
+      "hash": "0x6a88e40955d071259927466066321fb6ce60b46ce8b45c031f1415a0e2550d19",
+      "status": "FINALIZED",
+      "execution": [
+        "SUCCESS",
+        "SUCCESS"
+      ],
+      "agree": 3,
+      "total": 5,
+      "passed": true
+    },
+    {
+      "name": "evaluate",
+      "hash": "0x1f17d549c37f1f6ec57bb7cc1f2ed8ab33a3d35c195da32401efd348799e995b",
+      "status": "FINALIZED",
+      "execution": [
+        "SUCCESS",
+        "SUCCESS"
+      ],
+      "agree": 3,
+      "total": 5,
+      "passed": true
+    },
+    {
+      "name": "withdraw-beneficiary",
+      "hash": "0x79239d48b466e298c0a16e10d73df30475e7f48546920be3108352eb517cef73",
+      "status": "FINALIZED",
+      "execution": [
+        "SUCCESS"
+      ],
+      "agree": 3,
+      "total": 5,
+      "passed": true
+    },
+    {
+      "name": "withdraw-sponsor",
+      "hash": "0x17ea1dadc2fb7278fa6ee0bbffe6cf17d09e08bbb2e13af0d56053b982aeb65d",
+      "status": "FINALIZED",
+      "execution": [
+        "SUCCESS",
+        "SUCCESS"
+      ],
+      "agree": 3,
+      "total": 5,
+      "passed": true
+    }
+  ],
+  "grant": {
+    "amount_wei": "1000000000000",
+    "attempt_count": 1,
+    "beneficiary": "0xc67532aef9d2879cba9375a02e6217a3524657b8",
+    "beneficiary_due": "0",
+    "deadline": 1788574933,
+    "id": 0,
+    "observation": {
+      "artifact_binding": "YES",
+      "artifact_digest": "095b20d4e6274cdc27459e30ac1af114aadf86ee0ff0d2639f3cce1b5e4b01b0",
+      "commit_binding": "YES",
+      "coverage": "YES",
+      "delivery": "PARTIAL",
+      "github_digest": "3aaeddfeea64739b4c904571fe76cec442ff76f16ed4345f2e78c368b0fd6d6a",
+      "materiality": "SUBSTANTIVE",
+      "raw_artifact_digest": "095b20d4e6274cdc27459e30ac1af114aadf86ee0ff0d2639f3cce1b5e4b01b0",
+      "raw_github_digest": "4de46780f620f28155ea9692101666f8eb11adbf85fd7f35e6a5d351ab7ad8ff",
+      "raw_release_digest": "45f354a328d0fca2d3ae8a5498a5c888693172f0dfc3e90bf36bfb1c38f5aca9",
+      "reason": "",
+      "release_binding": "YES",
+      "release_digest": "cbc418801ef4626dd6db0c013df9831c5aee09d31a4e6a38da12a7159fc0641e",
+      "repo_identity": "YES"
+    },
+    "reason": "PARTIAL_DELIVERY",
+    "sponsor": "0xfed97e2ae1a8c1983b7ca206b3545e6a2c685e43",
+    "sponsor_due": "0",
+    "state": "PAID",
+    "terms": {
+      "amount_wei": "1000000000000",
+      "artifact_path": "evidence/impact-report.md",
+      "artifact_sha256": "095b20d4e6274cdc27459e30ac1af114aadf86ee0ff0d2639f3cce1b5e4b01b0",
+      "base_commit": "ef0a23e4470dfaef0c38cfface89fcabf8225cd8",
+      "beneficiary": "0xc67532aef9d2879cba9375a02e6217a3524657b8",
+      "contract": "0x6027309e88cb1f51f891eea85436ad80347592db",
+      "coverage_start": 1788430000,
+      "deadline": 1788574933,
+      "duration_seconds": 900,
+      "github_owner": "macdon3202",
+      "github_repository": "IMPACTRAIL",
+      "grant_id": 0,
+      "milestone_statement": "Deliver ImpactRail V4 with deterministic custody and commit-pinned public evidence.",
+      "minimum_commits": 1,
+      "minimum_contributors": 1,
+      "partial_payout_bps": 5000,
+      "profile": "testnet",
+      "release_tag": "impactrail-v4-fixture",
+      "target_commit": "536091b33cb4c4a9cd45fb224277aa3c451889b3",
+      "version": "IMPACT_RAIL_V5"
+    },
+    "terms_digest": "624cf0902ced9ddafc6c8599fdfe5a24d9770084d58aa1c5949d674d52827112",
+    "verdict": "PARTIAL"
+  },
+  "accounting": {
+    "balance": "0",
+    "beneficiary_claimable": "0",
+    "deposited": "1000000000000",
+    "locked": "0",
+    "outbound_requested": "1000000000000",
+    "sponsor_claimable": "0"
+  },
+  "initialBalances": {
+    "A": "199942998500000000000",
+    "B": "199907001499999999998",
+    "contract": "0"
+  },
+  "finalBalances": {
+    "A": "199942998000000000000",
+    "B": "199907001999999999998",
+    "contract": "0"
+  },
+  "balanceDeltas": {
+    "A": "-500000000000",
+    "B": "500000000000"
+  },
+  "limitation": "One V5 PARTIAL lifecycle using maintainer-controlled GitHub fixture evidence; this is not independent proof of real-world impact."
+}

@@ -1,5 +1,5 @@
 {
-  "contract": {"path":"contracts/impact_rail.py","sha256":"a6adf413020ea7511b86526601db3a4b942db2e9507c329f8880e752916ec3e4","version":"IMPACT_RAIL_V5","constructor":[],"deployment":null},
+  "contract": {"path":"contracts/impact_rail.py","sha256":"a6adf413020ea7511b86526601db3a4b942db2e9507c329f8880e752916ec3e4","version":"IMPACT_RAIL_V5","constructor":[],"deployment":"0x6027309e88CB1f51f891Eea85436ad80347592DB"},
   "frontend": {"logo":"frontend/public/impactrail-logo.png","built_index_sha256":"c84768a060479748aece9356c6aa81a5d4324d96fec7450f257b9027c33420b8","built_bundle_sha256":"98a831916c72464504c6d81902d5fcd0fb0ed4db9ca37bdba2cd2f8310aae3ff"},
   "superseded_deployments": [
     {"address":"0x377A27B57116eB21b2781879348676E4d71170F1","version":"IMPACT_RAIL_V4","reason":"live evaluation encountered an unidentified GitHub HTTP 403; grant expired and exact funds were returned"},
@@ -11,5 +11,6 @@
   "patched_payout_evidence":"evidence-package/patched-v4-payout.json",
   "audited_v4_deployment":"0xb61678034F70E5aC688851c3Ab547f4E428E781e",
   "live_matrix_evidence":"evidence-package/live-adversarial-matrix.json",
-  "note":"V4 completed a live FULL/PARTIAL/REJECTED/EXPIRED matrix. V5 fixes the audit findings and awaits deployment; no V5 live lifecycle is claimed."
+  "v5_live_evidence":"evidence-package/v5-live-lifecycle.json",
+  "note":"V4 completed the broad live matrix. V5 source parity and one PARTIAL lifecycle are verified; no broad V5 live adversarial matrix is claimed."
 }
