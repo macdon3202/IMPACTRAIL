@@ -162,14 +162,22 @@ def observe(sealed: dict) -> dict:
     obs = empty_observation("FETCH_FAILED")
     try:
         repo_url, commit_url, compare_url, artifact_url, release_url = source_urls(sealed)
-        responses = [gl.nondet.web.get(repo_url), gl.nondet.web.get(commit_url), gl.nondet.web.get(compare_url), gl.nondet.web.get(artifact_url), gl.nondet.web.get(release_url)]
+        urls = (repo_url, commit_url, compare_url, artifact_url, release_url)
+        labels = ("REPO", "COMMIT", "COMPARE", "ARTIFACT", "RELEASE")
         parsed = []
         raw_parts = {"github": [], "artifact": [], "release": []}
-        for index, response in enumerate(responses):
+        for index, url in enumerate(urls):
+            headers = {"User-Agent": "ImpactRail"}
+            if index != 3:
+                headers.update({"Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28"})
+            try:
+                response = gl.nondet.web.get(url, headers=headers)
+            except Exception:
+                return dict(obs, reason=labels[index] + "_FETCH_FAILED")
             if response.status != 200:
-                return dict(obs, reason="SOURCE_HTTP_" + str(response.status))
-            if not 0 < len(response.body) <= 48000:
-                return dict(obs, reason="SOURCE_SIZE_LIMIT")
+                return dict(obs, reason=labels[index] + "_HTTP_" + str(response.status))
+            if not isinstance(response.body, bytes) or not 0 < len(response.body) <= 48000:
+                return dict(obs, reason=labels[index] + "_SIZE_LIMIT")
             raw_parts["github" if index < 3 else "artifact" if index == 3 else "release"].append(response.body)
             parsed.append(response.body if index == 3 else json.loads(response.body.decode("utf-8"), parse_float=str, object_pairs_hook=unique_json))
         obs["raw_github_digest"] = hashlib.sha256(b"\x00".join(raw_parts["github"])).hexdigest()

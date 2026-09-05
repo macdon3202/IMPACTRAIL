@@ -160,6 +160,27 @@ def test_http_failure_is_retryable_and_expiry_refunds(ctx):
     assert c.expire_grant(grant_id) == "EXPIRED_REFUND_CLAIMABLE"
 
 
+@pytest.mark.parametrize("index,label", list(enumerate(("REPO", "COMMIT", "COMPARE", "ARTIFACT", "RELEASE"))))
+@pytest.mark.parametrize("status", [403, 429, 500])
+def test_each_source_failure_preserves_custody(ctx, index, label, status):
+    vm, c = ctx
+    payloads = source_payloads()
+    patterns = (r"api\.github\.com/repos/impactrail/demo$", r"api\.github\.com/repos/impactrail/demo/commits/",
+                r"api\.github\.com/repos/impactrail/demo/compare/", r"raw\.githubusercontent\.com/impactrail/demo/",
+                r"api\.github\.com/repos/impactrail/demo/releases/tags/")
+    vm._web_mocks.clear()
+    for i, (pattern, payload) in enumerate(zip(patterns, payloads)):
+        vm.mock_web(pattern, {"status": status if i == index else 200,
+                              "body": payload if isinstance(payload, bytes) else json.dumps(payload)})
+    grant_id = fund(vm, c)
+    before = c.get_accounting()
+    assert c.evaluate_grant(grant_id) == "INSUFFICIENT_EVIDENCE"
+    assert c.get_grant(grant_id)["reason"] == label + "_HTTP_" + str(status)
+    assert c.get_accounting() == before
+    with pytest.raises(Exception, match="NOT_CLAIMABLE"):
+        c.withdraw(grant_id)
+
+
 @pytest.mark.parametrize("case", ["value", "beneficiary", "duration", "commit", "artifact_path", "artifact_digest", "model", "duplicate_marker"])
 def test_negative_inputs_fail_closed(ctx, case):
     vm, c = ctx
