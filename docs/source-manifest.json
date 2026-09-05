@@ -12,5 +12,6 @@
   "audited_v4_deployment":"0xb61678034F70E5aC688851c3Ab547f4E428E781e",
   "live_matrix_evidence":"evidence-package/live-adversarial-matrix.json",
   "v5_live_evidence":"evidence-package/v5-live-lifecycle.json",
-  "note":"V4 completed the broad live matrix. V5 source parity and one PARTIAL lifecycle are verified; no broad V5 live adversarial matrix is claimed."
+  "v5_negative_evidence":"evidence-package/v5-negative-calls.json",
+  "note":"V4 completed the broad outcome matrix. V5 source parity, one PARTIAL lifecycle and three live negative calls are verified; no broad V5 live outcome matrix is claimed."
 }

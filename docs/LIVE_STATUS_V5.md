@@ -17,8 +17,20 @@ both claimable totals zero. Relative to the initial snapshot, sponsor balance wa
 down 500,000,000,000 wei and beneficiary balance was up 500,000,000,000 wei.
 Machine-readable evidence is in `evidence-package/v5-live-lifecycle.json`.
 
-This is one V5 PARTIAL lifecycle. The broader FULL/PARTIAL/REJECTED/EXPIRED and
-negative live matrix was performed on V4 before the findings were patched. Local
-V5 tests cover those fixed paths, but a broad V5 live matrix is not claimed.
+Three live negative calls were then executed against the finalized grant:
+
+- a second beneficiary withdrawal finalized with `NOT_CLAIMABLE`;
+- retrying the terminal grant finalized with `GRANT_TERMINAL`;
+- retrying a nonexistent grant finalized with `GRANT_NOT_FOUND`.
+
+Every non-idle leader execution returned the expected contract error. Contract
+balance, locked funds, deposited/outbound totals and both claimable totals were
+identical before and after the calls. Machine-readable receipts and readbacks
+are in `evidence-package/v5-negative-calls.json`.
+
+This is one V5 PARTIAL lifecycle plus three V5 live negative calls. The broader
+FULL/PARTIAL/REJECTED/EXPIRED matrix was performed on V4 before the findings were
+patched. Local V5 tests cover those fixed paths, but a broad V5 live outcome
+matrix is not claimed.
 Fixture evidence is controlled by the repository maintainer and is not
 independent certification of real-world impact.

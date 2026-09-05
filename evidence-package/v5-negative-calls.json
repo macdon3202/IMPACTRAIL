@@ -1,0 +1,54 @@
+{
+  "checkedAt": "2026-09-05T02:18:44.481Z",
+  "address": "0x6027309e88CB1f51f891Eea85436ad80347592DB",
+  "passed": true,
+  "transactions": [
+    {
+      "name": "double-withdraw",
+      "hash": "0xef8795f9d256bf4896ace82a15098505e33ac33826c0f262a23cc7647dfd1291",
+      "status": "FINALIZED",
+      "execution": [
+        "ERROR"
+      ],
+      "expectedError": "NOT_CLAIMABLE",
+      "passed": true
+    },
+    {
+      "name": "terminal-retry",
+      "hash": "0x2e7d495e1c9a6a62d5a3266f19c34aee300ae9663f4e77ce27bac2f0f871591b",
+      "status": "FINALIZED",
+      "execution": [
+        "ERROR",
+        "ERROR"
+      ],
+      "expectedError": "GRANT_TERMINAL",
+      "passed": true
+    },
+    {
+      "name": "missing-grant",
+      "hash": "0xd902ee2cb0fc3de800ec2b017a989cc78da1b1bd0e70bec33a2cec44a91db694",
+      "status": "FINALIZED",
+      "execution": [
+        "ERROR"
+      ],
+      "expectedError": "GRANT_NOT_FOUND",
+      "passed": true
+    }
+  ],
+  "accountingBefore": {
+    "balance": "0",
+    "beneficiary_claimable": "0",
+    "deposited": "1000000000000",
+    "locked": "0",
+    "outbound_requested": "1000000000000",
+    "sponsor_claimable": "0"
+  },
+  "accountingAfter": {
+    "balance": "0",
+    "beneficiary_claimable": "0",
+    "deposited": "1000000000000",
+    "locked": "0",
+    "outbound_requested": "1000000000000",
+    "sponsor_claimable": "0"
+  }
+}
