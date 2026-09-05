@@ -1,0 +1,122 @@
+{
+  "checkedAt": "2026-09-05T01:33:38.030Z",
+  "address": "0xb61678034F70E5aC688851c3Ab547f4E428E781e",
+  "sourceParity": true,
+  "sourceSha256": "ad94b173a02d2379eff800ae6600d47cb43234909da6cc59613480d16d90d608",
+  "passed": true,
+  "transactions": [
+    {
+      "name": "register",
+      "hash": "0xdb69e02cfefe76efd203e00c1fb0410b0bd54c218b5c456111e03b4203e68c13",
+      "status": "FINALIZED",
+      "execution": [
+        "SUCCESS",
+        "SUCCESS"
+      ],
+      "agree": 5,
+      "total": 5,
+      "passed": true
+    },
+    {
+      "name": "fund",
+      "hash": "0x2e9d85361ea679d8579d12945d2c51af965265a3c29a19abd5947ea0a62628f3",
+      "status": "FINALIZED",
+      "execution": [
+        "SUCCESS",
+        "SUCCESS"
+      ],
+      "agree": 3,
+      "total": 5,
+      "passed": true
+    },
+    {
+      "name": "evaluate",
+      "hash": "0xb4b5231e5ebb0d475fe0010fd7f7d11ba96d2e4b00adc3452b55f796f59acf17",
+      "status": "FINALIZED",
+      "execution": [
+        "SUCCESS",
+        "SUCCESS"
+      ],
+      "agree": 3,
+      "total": 5,
+      "passed": true
+    },
+    {
+      "name": "withdraw",
+      "hash": "0xf3d305856625d68c9222385191128e4a0ed3c290b860968965660c43406578d9",
+      "status": "FINALIZED",
+      "execution": [
+        "SUCCESS",
+        "SUCCESS"
+      ],
+      "agree": 5,
+      "total": 5,
+      "passed": true
+    }
+  ],
+  "grant": {
+    "amount_wei": "1000000000000",
+    "attempt_count": 1,
+    "beneficiary": "0xc67532aef9d2879cba9375a02e6217a3524657b8",
+    "beneficiary_due": "0",
+    "deadline": 1788572762,
+    "id": 0,
+    "observation": {
+      "artifact_binding": "YES",
+      "artifact_digest": "095b20d4e6274cdc27459e30ac1af114aadf86ee0ff0d2639f3cce1b5e4b01b0",
+      "commit_binding": "YES",
+      "coverage": "YES",
+      "delivery": "FULL",
+      "github_digest": "f68741f4a7855482ac36c877615db67b3f236d0b8d5c0198996dfc15037400df",
+      "materiality": "SUBSTANTIVE",
+      "raw_artifact_digest": "095b20d4e6274cdc27459e30ac1af114aadf86ee0ff0d2639f3cce1b5e4b01b0",
+      "raw_github_digest": "16b55ded8e6a63db8900ae0bb9c103432e7a1cac9dd1cd287e6b9f4d71aab5db",
+      "raw_release_digest": "45f354a328d0fca2d3ae8a5498a5c888693172f0dfc3e90bf36bfb1c38f5aca9",
+      "reason": "",
+      "release_binding": "YES",
+      "release_digest": "b24aec0255c8378a18319d7cef8849f6505ff9b2e6e741234726608d5ed05c5c",
+      "repo_identity": "YES"
+    },
+    "reason": "IMPACT_VERIFIED",
+    "sponsor": "0xfed97e2ae1a8c1983b7ca206b3545e6a2c685e43",
+    "sponsor_due": "0",
+    "state": "PAID",
+    "terms": {
+      "amount_wei": "1000000000000",
+      "artifact_path": "evidence/impact-report.md",
+      "artifact_sha256": "095b20d4e6274cdc27459e30ac1af114aadf86ee0ff0d2639f3cce1b5e4b01b0",
+      "base_commit": "ef0a23e4470dfaef0c38cfface89fcabf8225cd8",
+      "beneficiary": "0xc67532aef9d2879cba9375a02e6217a3524657b8",
+      "contract": "0xb61678034f70e5ac688851c3ab547f4e428e781e",
+      "coverage_start": 1788430000,
+      "deadline": 1788572762,
+      "duration_seconds": 900,
+      "github_owner": "macdon3202",
+      "github_repository": "IMPACTRAIL",
+      "grant_id": 0,
+      "milestone_statement": "Deliver ImpactRail V4 with deterministic custody and commit-pinned public evidence.",
+      "minimum_commits": 1,
+      "minimum_contributors": 1,
+      "partial_payout_bps": 5000,
+      "profile": "testnet",
+      "release_tag": "impactrail-v4-fixture",
+      "target_commit": "536091b33cb4c4a9cd45fb224277aa3c451889b3",
+      "version": "IMPACT_RAIL_V4"
+    },
+    "terms_digest": "29fbb675f3e659772acb7c74be6a689759b520ffe0739a76d622e45971f52110",
+    "verdict": "VERIFIED"
+  },
+  "accounting": {
+    "balance": "0",
+    "beneficiary_claimable": "0",
+    "deposited": "1000000000000",
+    "locked": "0",
+    "outbound_requested": "1000000000000",
+    "sponsor_claimable": "0"
+  },
+  "beneficiaryBalanceBefore": "199906999999999999998",
+  "beneficiaryBalanceAfter": "199907000999999999998",
+  "beneficiaryDelta": "1000000000000",
+  "contractBalance": "0",
+  "limitation": "One funded FULL payout lifecycle. No live partial-payout or adversarial matrix is claimed."
+}

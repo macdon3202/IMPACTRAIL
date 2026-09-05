@@ -22,6 +22,22 @@ bytes. Since the same repository endpoint also returned 200 without headers
 during the later probe, the historical 403 cannot honestly be attributed solely
 to a missing header; a transient or rate-limit response remains possible.
 
-This proves current acquisition reachability and safe recovery, not a successful
-patched payout lifecycle. The patched main source still requires a new deployment
-and a fresh funded lifecycle.
+## Patched deployment — 2026-09-05
+
+Address: `0xb61678034F70E5aC688851c3Ab547f4E428E781e`.
+Deployed bytes match SHA-256
+`ad94b173a02d2379eff800ae6600d47cb43234909da6cc59613480d16d90d608`.
+Grant 0 completed registration, funding, evaluation and withdrawal, all FINALIZED
+with successful execution and a majority agreeing. Evaluation returned VERIFIED
+on its first attempt; delivery FULL and materiality SUBSTANTIVE were model outputs.
+The beneficiary's balance increased by exactly 1,000,000,000,000 wei. Contract
+balance, locked funds and both claimable balances are zero.
+
+Immediately after withdrawal was accepted, state was PAID but the outgoing
+transfer had not yet changed balances. At 01:33:38 UTC the final readback confirmed
+actual delivery. Evidence: `evidence-package/patched-v4-payout.json`.
+
+This is one successful FULL payout lifecycle. Partial payouts and the full
+adversarial matrix have not been run on this deployment. The tiny artifact
+commit and maintainer-authored release do not independently prove the full
+milestone; the successful model judgment must not be presented as such proof.
