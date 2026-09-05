@@ -23,6 +23,11 @@ This does not establish a complete live adversarial matrix or independent
 real-world impact: the fixture artifact and release are controlled by this repo's
 maintainer, and the model's substantive-delivery judgment is an observation.
 
+The subsequent adversarial audit completed FULL, PARTIAL, REJECTED and EXPIRED
+paths and found four contract issues plus a frontend receipt issue. Those fixes
+are now V5 and await a new deployment. The V4 address above remains historical
+live evidence; the frontend refuses to treat it as V5.
+
 ## Local gates
 
 ```powershell

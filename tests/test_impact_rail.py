@@ -26,10 +26,10 @@ def body_for(beneficiary=BENEFICIARY, amount=AMOUNT, repo="impactrail/demo", art
 def source_payloads(beneficiary=BENEFICIARY, amount=AMOUNT, repo="impactrail/demo", artifact=ARTIFACT, artifact_sha256=ARTIFACT_SHA256):
     github_repo = {"visibility": "public", "full_name": repo}
     github_commit = {"sha": TARGET, "commit": {"message": "Implement reproducible impact release", "author": {"date": "2026-09-03T00:00:00Z", "name": "Builder"}}}
-    compare = {"status": "ahead", "ahead_by": 3, "commits": [
-        {"sha": "1" * 40, "author": {"login": "alice"}, "commit": {"author": {"name": "Alice"}}},
-        {"sha": "2" * 40, "author": {"login": "bob"}, "commit": {"author": {"name": "Bob"}}},
-        {"sha": "3" * 40, "author": {"login": "carol"}, "commit": {"author": {"name": "Carol"}}}]}
+    compare = {"status": "ahead", "ahead_by": 3, "total_commits": 3, "base_commit": {"sha": BASE}, "commits": [
+        {"sha": "1" * 40, "author": {"login": "alice"}, "commit": {"author": {"date": "2026-09-03T00:00:00Z", "name": "Alice"}}},
+        {"sha": "2" * 40, "author": {"login": "bob"}, "commit": {"author": {"date": "2026-09-03T00:01:00Z", "name": "Bob"}}},
+        {"sha": TARGET, "author": {"login": "carol"}, "commit": {"author": {"date": "2026-09-03T00:02:00Z", "name": "Carol"}}}]}
     release = {"tag_name": RELEASE, "target_commitish": TARGET, "draft": False, "prerelease": False, "published_at": "2026-09-03T12:00:00Z", "body": body_for(beneficiary, amount, repo, ARTIFACT_PATH, artifact_sha256)}
     return github_repo, github_commit, compare, artifact, release
 
@@ -49,7 +49,7 @@ def mocks(vm, *args, model='{"delivery":"FULL","materiality":"SUBSTANTIVE"}', st
     vm.mock_web(r"api\.github\.com/repos/impactrail/demo$", {"status": status, "body": json.dumps(repo)})
     vm.mock_web(r"raw\.githubusercontent\.com/impactrail/demo/", {"status": status, "body": artifact})
     vm.mock_web(r"api\.github\.com/repos/impactrail/demo/releases/tags/", {"status": status, "body": json.dumps(release)})
-    vm.mock_llm("IMPACT_RAIL_V4", model)
+    vm.mock_llm("IMPACT_RAIL_V5", model)
 
 
 @pytest.fixture
@@ -99,7 +99,7 @@ def capture_transfer(vm):
 def test_constructor_and_sealed_config(ctx):
     _, c = ctx
     config = c.get_config()
-    assert config["version"] == "IMPACT_RAIL_V4" and config["profile"] == "testnet"
+    assert config["version"] == "IMPACT_RAIL_V5" and config["profile"] == "testnet"
     assert config["sources"] == ["github-api", "github-raw-at-commit", "github-release"]
 
 
@@ -230,7 +230,7 @@ def test_negative_inputs_fail_closed(ctx, case):
         vm.mock_web(r"api\.github\.com/repos/impactrail/demo$", {"status": 200, "body": json.dumps(repo)})
         vm.mock_web(r"raw\.githubusercontent\.com/impactrail/demo/", {"status": 200, "body": artifact})
         vm.mock_web(r"api\.github\.com/repos/impactrail/demo/releases/tags/", {"status": 200, "body": json.dumps(release)})
-        vm.mock_llm("IMPACT_RAIL_V4", '{"delivery":"FULL","materiality":"SUBSTANTIVE"}')
+        vm.mock_llm("IMPACT_RAIL_V5", '{"delivery":"FULL","materiality":"SUBSTANTIVE"}')
     grant_id = fund(vm, c)
     assert c.evaluate_grant(grant_id) == "INSUFFICIENT_EVIDENCE"
     assert c.get_grant(grant_id)["state"] == "INSUFFICIENT_EVIDENCE"

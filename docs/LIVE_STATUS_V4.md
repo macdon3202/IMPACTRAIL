@@ -37,7 +37,11 @@ Immediately after withdrawal was accepted, state was PAID but the outgoing
 transfer had not yet changed balances. At 01:33:38 UTC the final readback confirmed
 actual delivery. Evidence: `evidence-package/patched-v4-payout.json`.
 
-This is one successful FULL payout lifecycle. Partial payouts and the full
-adversarial matrix have not been run on this deployment. The tiny artifact
-commit and maintainer-authored release do not independently prove the full
-milestone; the successful model judgment must not be presented as such proof.
+The later adversarial matrix also finalized PARTIAL, REJECTED and EXPIRED paths.
+All four grants ended PAID; aggregate contract balance and all claimable ledgers
+returned to zero. Sponsor and beneficiary balance deltas matched FULL plus the
+sealed 50% PARTIAL payout. See `evidence-package/live-adversarial-matrix.json`.
+
+That audit exposed issues documented in `ADVERSARIAL_AUDIT_V4.md`. They are fixed
+in V5 source and require a new deployment. The tiny artifact commit and
+maintainer-authored release do not independently prove the full milestone.

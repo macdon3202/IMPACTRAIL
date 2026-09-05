@@ -1,0 +1,169 @@
+{
+  "checkedAt": "2026-09-05T02:00:32.147Z",
+  "address": "0xb61678034F70E5aC688851c3Ab547f4E428E781e",
+  "passed": true,
+  "cases": {
+    "reject": {
+      "id": 1,
+      "state": "PAID"
+    },
+    "partial": {
+      "id": 2,
+      "state": "PAID"
+    },
+    "expire": {
+      "id": 3,
+      "state": "PAID"
+    }
+  },
+  "accounting": {
+    "balance": "0",
+    "beneficiary_claimable": "0",
+    "deposited": "4000000000000",
+    "locked": "0",
+    "outbound_requested": "4000000000000",
+    "sponsor_claimable": "0"
+  },
+  "initialBalances": {
+    "A": "199943000000000000000",
+    "B": "199906999999999999998",
+    "contract": "0"
+  },
+  "finalBalances": {
+    "A": "199942998500000000000",
+    "B": "199907001499999999998",
+    "contract": "0"
+  },
+  "balanceDeltas": {
+    "A": "-1500000000000",
+    "B": "1500000000000"
+  },
+  "transactions": [
+    {
+      "name": "double-withdraw",
+      "hash": "0x5c0717b16c8b3d5310c3473e187a98dd9b807f507f8ce426ddcd6e322b325abc",
+      "status": "FINALIZED",
+      "execution": [
+        "ERROR"
+      ],
+      "passed": true
+    },
+    {
+      "name": "terminal-retry",
+      "hash": "0x0966c8cbfe7055eeb3bc18739c1adae08311c7ffd0e57d739c70714d33e1f992",
+      "status": "FINALIZED",
+      "execution": [
+        "ERROR",
+        "ERROR"
+      ],
+      "passed": true
+    },
+    {
+      "name": "missing-grant",
+      "hash": "0xba6c520bdfb721927f9906bdcecb8b0f761ec9214d0f1643e669cdf6950f55fa",
+      "status": "FINALIZED",
+      "execution": [
+        "ERROR",
+        "ERROR"
+      ],
+      "passed": true
+    },
+    {
+      "name": "reject-create",
+      "hash": "0x3249e14559513242940041264ade9f44ca699189933b63628e00c0e608439224",
+      "status": "FINALIZED",
+      "execution": [
+        "SUCCESS",
+        "SUCCESS"
+      ],
+      "passed": true
+    },
+    {
+      "name": "reject-evaluate",
+      "hash": "0x957243a8847e3997b28a171e68237b4a33d5be4ad475fe5341ec6c6ff6683248",
+      "status": "FINALIZED",
+      "execution": [
+        "SUCCESS",
+        "SUCCESS"
+      ],
+      "passed": true
+    },
+    {
+      "name": "reject-withdraw-A",
+      "hash": "0x7ad0bafd577d4114de7d5f6ad0d32591e9115a55f770c4cbdcda0a1eefdf4b18",
+      "status": "FINALIZED",
+      "execution": [
+        "SUCCESS",
+        "SUCCESS"
+      ],
+      "passed": true
+    },
+    {
+      "name": "partial-create",
+      "hash": "0x0adbac1c320f14c90963c4ac9a121b5e937716f71a2129636692ad6744a42e38",
+      "status": "FINALIZED",
+      "execution": [
+        "SUCCESS",
+        "SUCCESS"
+      ],
+      "passed": true
+    },
+    {
+      "name": "partial-evaluate",
+      "hash": "0x4b0b9b9fba9042e9481f261b14bbda6630bf2c1723dcd123e0b1dba8d8660bae",
+      "status": "FINALIZED",
+      "execution": [
+        "SUCCESS",
+        "SUCCESS"
+      ],
+      "passed": true
+    },
+    {
+      "name": "partial-withdraw-B",
+      "hash": "0x01d6a5e0a6546798c5e16154cf0509298af26ef55406644a93e501e8c2c05fae",
+      "status": "FINALIZED",
+      "execution": [
+        "SUCCESS"
+      ],
+      "passed": true
+    },
+    {
+      "name": "partial-withdraw-A",
+      "hash": "0xe2d9c617aed7ecc9ce1df1485932ea32f8ebd0865ab87eeef5043c022489c4e6",
+      "status": "FINALIZED",
+      "execution": [
+        "SUCCESS"
+      ],
+      "passed": true
+    },
+    {
+      "name": "expire-create",
+      "hash": "0xe52a91f4c4389b1f993e074596003b445e595e606ae31ed254e387b8d544882b",
+      "status": "FINALIZED",
+      "execution": [
+        "SUCCESS"
+      ],
+      "passed": true
+    },
+    {
+      "name": "expire-expire",
+      "hash": "0xc6e9b861dea233d431bc11ff68466b3121446333e24f42801476bf46f0853df3",
+      "status": "FINALIZED",
+      "execution": [
+        "SUCCESS"
+      ],
+      "passed": true
+    },
+    {
+      "name": "expire-withdraw-A",
+      "hash": "0xcc055e9bfdcdf3d4b6de4bc49702ff49d16a3589852da1ecac5d74952b451938",
+      "status": "FINALIZED",
+      "execution": [
+        "SUCCESS",
+        "SUCCESS"
+      ],
+      "passed": true
+    }
+  ],
+  "interpretation": "Beneficiary received FULL 1000000000000 + PARTIAL 500000000000; rejected and expired deposits returned to sponsor."
+}

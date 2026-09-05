@@ -1,6 +1,6 @@
 {
-  "contract": {"path":"contracts/impact_rail.py","sha256":"ad94b173a02d2379eff800ae6600d47cb43234909da6cc59613480d16d90d608","version":"IMPACT_RAIL_V4","constructor":[],"deployment":"0xb61678034F70E5aC688851c3Ab547f4E428E781e"},
-  "frontend": {"logo":"frontend/public/impactrail-logo.png","built_index_sha256":"85f8965cbe9628229c12875124440f162bf3f346d0db6d4d3afe892cff7c2f8d","built_bundle_sha256":"571390d4df8cd3e912d02e901eaace4cf7068e82505c27af839fdecfd4560f63"},
+  "contract": {"path":"contracts/impact_rail.py","sha256":"a6adf413020ea7511b86526601db3a4b942db2e9507c329f8880e752916ec3e4","version":"IMPACT_RAIL_V5","constructor":[],"deployment":null},
+  "frontend": {"logo":"frontend/public/impactrail-logo.png","built_index_sha256":"c84768a060479748aece9356c6aa81a5d4324d96fec7450f257b9027c33420b8","built_bundle_sha256":"98a831916c72464504c6d81902d5fcd0fb0ed4db9ca37bdba2cd2f8310aae3ff"},
   "superseded_deployments": [
     {"address":"0x377A27B57116eB21b2781879348676E4d71170F1","version":"IMPACT_RAIL_V4","reason":"live evaluation encountered an unidentified GitHub HTTP 403; grant expired and exact funds were returned"},
     {"address":"0x5f6EcEE07360624Daa2De584e4936B1c7623d2c2","version":"IMPACT_RAIL_V3","reason":"fixture exceeded the sealed response-size limit"},
@@ -9,5 +9,7 @@
   ],
   "live_evidence":{"github_probe":"all five fixed endpoints returned HTTP 200 from GenVM with explicit headers","old_grant_recovery":"PAID; contract balance, locked and claimable balances are zero; sponsor balance delta equals 1000000000000 wei"},
   "patched_payout_evidence":"evidence-package/patched-v4-payout.json",
-  "note":"Source parity and one funded FULL payout lifecycle verified; no complete live adversarial matrix claimed."
+  "audited_v4_deployment":"0xb61678034F70E5aC688851c3Ab547f4E428E781e",
+  "live_matrix_evidence":"evidence-package/live-adversarial-matrix.json",
+  "note":"V4 completed a live FULL/PARTIAL/REJECTED/EXPIRED matrix. V5 fixes the audit findings and awaits deployment; no V5 live lifecycle is claimed."
 }

@@ -1,4 +1,4 @@
-export const VERSION = 'IMPACT_RAIL_V4';
+export const VERSION = 'IMPACT_RAIL_V5';
 export const NETWORK = 'studionet';
 export const JOURNAL = 'impactrail_transactions_v1';
 export const serialize = (value) => JSON.stringify(value, (_, v) => typeof v === 'bigint' ? v.toString() : v);
@@ -11,8 +11,10 @@ export const normalizeHash = (tx) => {
 export const receiptState = (info) => {
   const status = String(info?.statusName ?? info?.status_name ?? info?.status ?? '').toUpperCase();
   const execution = String(info?.txExecutionResultName ?? info?.tx_execution_result_name ?? info?.execution_result ?? info?.resultName ?? '').toUpperCase();
-  const failed = ['FAILED', 'REJECTED', 'CANCELLED', 'CANCELED', 'UNDETERMINED'].includes(status) || ['ERROR', 'FAILED', 'REVERT'].includes(execution);
-  return {status, execution, failed, accepted: !failed && ['ACCEPTED', 'FINALIZED'].includes(status)};
+  const receipts = (info?.consensus_data?.leader_receipt ?? []).filter(r => r.result?.payload !== 'idle');
+  const failed = ['FAILED', 'REJECTED', 'CANCELLED', 'CANCELED', 'UNDETERMINED'].includes(status) || ['ERROR', 'FAILED', 'REVERT'].includes(execution) || receipts.some(r => r.execution_result === 'ERROR');
+  const executionVerified = execution === 'SUCCESS' || (receipts.length > 0 && receipts.every(r => r.execution_result === 'SUCCESS'));
+  return {status, execution, failed, accepted: !failed && executionVerified && ['ACCEPTED', 'FINALIZED'].includes(status)};
 };
 export const loadJournal = (storage) => {
   const raw = storage.getItem(JOURNAL); if (!raw) return [];

@@ -17,7 +17,7 @@ from typing import Any
 from urllib.parse import quote
 from genlayer import *
 
-VERSION = "IMPACT_RAIL_V4"
+VERSION = "IMPACT_RAIL_V5"
 ZERO = "0x" + "0" * 40
 FIELDS = ("repo_identity", "commit_binding", "artifact_binding", "release_binding", "coverage", "delivery", "materiality")
 BOOL_VALUES = ("YES", "NO", "UNKNOWN")
@@ -186,34 +186,39 @@ def observe(sealed: dict) -> dict:
         repo, commit, comparison, artifact, release = parsed
         if not all(isinstance(x, dict) for x in (repo, commit, comparison, release)) or not isinstance(artifact, bytes):
             return dict(obs, reason="SOURCE_RECORD_MISSING")
-        obs["github_digest"] = digest({"repo": repo, "commit": commit, "compare": comparison})
         obs["artifact_digest"] = hashlib.sha256(artifact).hexdigest()
-        obs["release_digest"] = digest(release)
         expected_repo = sealed["github_owner"].lower() + "/" + sealed["github_repository"].lower()
         if repo.get("visibility") != "public" or str(repo.get("full_name", "")).lower() != expected_repo:
             obs["repo_identity"] = "NO"
             return dict(obs, reason="GITHUB_REPOSITORY_MISMATCH")
         obs["repo_identity"] = "YES"
-        if str(commit.get("sha", "")).lower() != sealed["target_commit"] or timestamp(commit.get("commit", {}).get("author", {}).get("date")) < sealed["coverage_start"]:
+        commit_time = timestamp(commit.get("commit", {}).get("author", {}).get("date"))
+        if (str(commit.get("sha", "")).lower() != sealed["target_commit"] or
+                commit_time < sealed["coverage_start"] or commit_time > sealed["observed_at"]):
             obs["commit_binding"] = "NO"
             return dict(obs, reason="GITHUB_COMMIT_MISMATCH")
         obs["commit_binding"] = "YES"
         commits = comparison.get("commits")
-        if comparison.get("status") not in ("ahead", "identical") or not isinstance(commits, list) or comparison.get("ahead_by", 0) < sealed["minimum_commits"]:
+        ahead_by = comparison.get("ahead_by", 0)
+        complete_range = (isinstance(commits, list) and 0 < len(commits) <= 250 and ahead_by == len(commits) and
+                          comparison.get("total_commits") == len(commits) and
+                          str((comparison.get("base_commit") or {}).get("sha", "")).lower() == sealed["base_commit"] and
+                          str((commits[-1] if commits else {}).get("sha", "")).lower() == sealed["target_commit"])
+        if comparison.get("status") != "ahead" or not complete_range or ahead_by < sealed["minimum_commits"]:
             obs["coverage"] = "NO"
             return dict(obs, reason="COMMIT_COVERAGE_BELOW_THRESHOLD")
         contributors = set()
+        commit_times = []
         for item in commits:
             if isinstance(item, dict):
+                item_time = timestamp((item.get("commit") or {}).get("author", {}).get("date")) if isinstance(item.get("commit"), dict) else 0
+                commit_times.append(item_time)
                 author = item.get("author") or {}
                 login = author.get("login") if isinstance(author, dict) else None
                 if isinstance(login, str) and login:
                     contributors.add(login.lower())
-                else:
-                    name = (item.get("commit") or {}).get("author", {}).get("name") if isinstance(item.get("commit"), dict) else None
-                    if isinstance(name, str) and name:
-                        contributors.add(name.lower())
-        if len(contributors) < sealed["minimum_contributors"]:
+        if (len(contributors) < sealed["minimum_contributors"] or
+                any(value < sealed["coverage_start"] or value > sealed["observed_at"] for value in commit_times)):
             obs["coverage"] = "NO"
             return dict(obs, reason="CONTRIBUTOR_COVERAGE_BELOW_THRESHOLD")
         obs["coverage"] = "YES"
@@ -223,7 +228,8 @@ def observe(sealed: dict) -> dict:
         obs["artifact_binding"] = "YES"
         markers = marker_map(release.get("body", ""))
         if (release.get("tag_name") != sealed["release_tag"] or str(release.get("target_commitish", "")).lower() != sealed["target_commit"] or
-                release.get("draft") is not False or release.get("prerelease") is not False or timestamp(release.get("published_at")) < sealed["coverage_start"] or
+                release.get("draft") is not False or release.get("prerelease") is not False or
+                not sealed["coverage_start"] <= timestamp(release.get("published_at")) <= sealed["observed_at"] or
                 markers["impactrail_repo"].lower() != expected_repo or markers["impactrail_target_commit"].lower() != sealed["target_commit"] or
                 markers["impactrail_artifact_path"] != sealed["artifact_path"] or markers["impactrail_artifact_sha256"].lower() != sealed["artifact_sha256"] or
                 markers["impactrail_release_tag"] != sealed["release_tag"] or
@@ -232,6 +238,14 @@ def observe(sealed: dict) -> dict:
             obs["release_binding"] = "NO"
             return dict(obs, reason="GITHUB_RELEASE_MISMATCH")
         obs["release_binding"] = "YES"
+        stable_commits = [{"sha": str(item.get("sha", "")).lower(),
+                           "login": str((item.get("author") or {}).get("login", "")).lower()}
+                          for item in commits if isinstance(item, dict)]
+        obs["github_digest"] = digest({"repo": expected_repo, "target": sealed["target_commit"],
+                                       "commit_time": commit_time, "compare_status": comparison.get("status"),
+                                       "ahead_by": comparison.get("ahead_by"), "commits": stable_commits})
+        obs["release_digest"] = digest({"tag": release.get("tag_name"), "target": str(release.get("target_commitish", "")).lower(),
+                                        "published_at": timestamp(release.get("published_at")), "markers": markers})
         artifact_text = artifact.decode("utf-8")
         delivery, materiality = semantic(sealed, {"milestone": sealed["milestone_statement"], "commit_message": (commit.get("commit") or {}).get("message", ""), "compare": {"ahead_by": comparison.get("ahead_by"), "commits": commits}, "artifact_path": sealed["artifact_path"], "artifact_text": artifact_text})
         obs["delivery"], obs["materiality"] = delivery, materiality
@@ -360,7 +374,9 @@ class ImpactRail(gl.Contract):
         sender = self._external_sender()
         terms = self._build_terms(beneficiary, amount_wei, github_owner, github_repository, base_commit, target_commit, artifact_path, artifact_sha256,
                                    release_tag, milestone_statement, minimum_commits, minimum_contributors, coverage_start, duration, partial_payout_bps)
-        key = digest({"sponsor": address_text(sender), "terms": terms})
+        evidence_key = {key: terms[key] for key in ("version", "contract", "beneficiary", "amount_wei", "github_owner", "github_repository",
+                        "base_commit", "target_commit", "artifact_path", "artifact_sha256", "release_tag")}
+        key = digest({"sponsor": address_text(sender), "evidence": evidence_key})
         require(key not in self.grant_keys, "DUPLICATE_GRANT")
         grant_id = self.grant_count
         deadline = u256(now() + int(duration))
