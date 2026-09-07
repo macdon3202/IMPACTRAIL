@@ -10,6 +10,16 @@
   "live_lifecycle": "PASS_INSUFFICIENT_EVIDENCE_EXPIRY_SPONSOR_REFUND",
   "live_evidence": "evidence-package/v6-live-lifecycle.json",
   "live_positive_payout": "NOT_VERIFIED",
+  "canonical_npm_resource": {
+    "package": "@macdon3202/impactrail-canonical",
+    "version": "1.0.0",
+    "gitHead": "c526aa3faaa8299f571b8598f56423e77084178b",
+    "repository_binding": "PASS",
+    "registry_version_http": 200,
+    "clean_consumer_install": "PASS",
+    "github_release": "https://github.com/macdon3202/IMPACTRAIL/releases/tag/impactrail-v6-npm-1.0.0",
+    "downloads_daily_aggregation": "PENDING"
+  },
   "browser_wallet_journey": "NOT_VERIFIED",
   "frontend": {
     "production": "https://impactrail.pages.dev",

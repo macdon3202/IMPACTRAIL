@@ -23,6 +23,9 @@ and journal tests, and the production build pass. Unsupported commit counts
 above 250 and invalid npm thresholds/periods are rejected before custody. The
 local frontend targets V6 after source parity and canonical readback checks.
 Live positive npm-backed payout and the browser wallet journey remain unverified.
+The public package, exact Registry `gitHead`, commit-bound GitHub Release and a
+real consumer installation are now prepared; only the official daily Downloads
+API aggregation is pending. See `docs/NPM_CANONICAL_RESOURCE.md`.
 See `docs/SPECIFICATION_V6.md` and
 `docs/ADVERSARIAL_AUDIT_V6.md`.
 
