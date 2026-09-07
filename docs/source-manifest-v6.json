@@ -1,0 +1,22 @@
+{
+  "version": "IMPACT_RAIL_V6",
+  "contract_source": "contracts/impact_rail_v6.py",
+  "contract_sha256": "9aa7e0e2dd2e352bd5d386657d2bdaec137fab48c1d0002966db61772e8bf9d4",
+  "constructor_args": [],
+  "deployment": "0xbA2DdBE10249E870EC2CF87A1b8C4e41553A995a",
+  "deployment_transaction": "PENDING_EXPLORER_CAPTURE",
+  "deployed_source_sha256": "9aa7e0e2dd2e352bd5d386657d2bdaec137fab48c1d0002966db61772e8bf9d4",
+  "source_parity": "PASS",
+  "live_lifecycle": "PASS_INSUFFICIENT_EVIDENCE_EXPIRY_SPONSOR_REFUND",
+  "live_evidence": "evidence-package/v6-live-lifecycle.json",
+  "live_positive_payout": "NOT_VERIFIED",
+  "browser_wallet_journey": "NOT_VERIFIED",
+  "local_gates": {
+    "genvm_lint_validation": "PASS",
+    "direct_mode_contract_tests": "18 PASS",
+    "frontend_transaction_tests": "5 PASS",
+    "frontend_production_build": "PASS"
+  },
+  "readback_checked_at": "2026-09-07T05:17:21.377Z",
+  "note": "V6 source parity and five finalized lifecycle transactions verified. Missing npm evidence prevented payout; expiry and exact sponsor refund completed. Final balance and claims are zero. Positive payout and browser journey are not claimed."
+}

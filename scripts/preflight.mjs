@@ -1,0 +1,21 @@
+import {createClient} from '../frontend/node_modules/genlayer-js/dist/index.js';
+import {studionet} from '../frontend/node_modules/genlayer-js/dist/chains/index.js';
+import {createHash} from 'node:crypto';
+import {readFileSync,writeFileSync,mkdirSync} from 'node:fs';
+const hash=b=>createHash('sha256').update(b).digest('hex');
+const address=process.env.IMPACTRAIL_ADDRESS??process.argv[2]??'';
+if(!/^0x[0-9a-fA-F]{40}$/.test(address))throw Error('INVALID_CONTRACT_ADDRESS');
+const client=createClient({chain:studionet});
+const root='https://api.github.com/repos/macdon3202/IMPACTRAIL';
+const target=process.argv[3]??'a3271fdd6ff89049a577328d9f029cb5fef17628';
+const base=process.argv[4]??'dea2135dc1c3281311111dcb0858fa1bc17991c6';
+const urls=[root,root+'/commits/'+target,root+'/compare/'+base+'...'+target,'https://raw.githubusercontent.com/macdon3202/IMPACTRAIL/'+target+'/evidence/impact-report.md'];
+const result={address,checkedAt:new Date().toISOString(),sources:[]};
+const code=await client.getContractCode(address);
+const bytes=typeof code==='string'&&code.startsWith('0x')?Buffer.from(code.slice(2),'hex'):Buffer.from(code);
+result.deployedHash=hash(bytes);result.localHash=hash(readFileSync(new URL('../contracts/impact_rail_v6.py',import.meta.url)));result.exactParity=result.deployedHash===result.localHash;
+result.config=await client.readContract({address,functionName:'get_config',args:[]});
+result.accounting=await client.readContract({address,functionName:'get_accounting',args:[]});
+for(const url of urls){const r=await fetch(url,{signal:AbortSignal.timeout(20000)});const b=Buffer.from(await r.arrayBuffer());const entry={url,status:r.status,bytes:b.length,sha256:hash(b)};if(r.ok&&url.startsWith(root)){const d=JSON.parse(b);entry.details={visibility:d.visibility,full_name:d.full_name,sha:d.sha,date:d.commit?.author?.date,ahead_by:d.ahead_by,status:d.status,authors:d.commits?.map(c=>c.author?.login)};}result.sources.push(entry);}
+mkdirSync(new URL('./.state/',import.meta.url),{recursive:true});
+const encoded=JSON.stringify(result,(_,v)=>typeof v==='bigint'?String(v):v,2);writeFileSync(new URL('./.state/preflight.json',import.meta.url),encoded);console.log(encoded);

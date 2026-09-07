@@ -3,15 +3,28 @@
 Live frontend: https://impactrail.pages.dev
 
 ImpactRail is a GenLayer intelligent contract and companion frontend for a
-narrow public-goods grant workflow. A sponsor locks exact native GEN against a
-beneficiary and a sealed milestone. The contract constructs and checks three
-canonical sources: GitHub API commit history, raw GitHub content at an exact commit,
-and a published GitHub Release attestation. Validators acquire the sources independently;
-the bounded model observes only delivery/materiality. The contract derives the
-verdict and payout, so a contributor cannot self-author evidence or choose the
-recipient of a reward.
+public-goods grant workflow. V6 requires independently attributable adoption:
+official npm Registry metadata must bind an exact package version to the sealed
+GitHub repository and commit, and the npm Downloads API must prove a sealed
+historical threshold. GitHub commit, raw artifact and release evidence remain
+mandatory provenance, but project-authored narrative can no longer unlock a
+payout by itself. Validators reacquire every source independently and the
+contract derives the verdict, amount and recipient deterministically.
 
 ## Status
+
+V6 is deployed at `0xbA2DdBE10249E870EC2CF87A1b8C4e41553A995a`.
+Canonical configuration and exact source parity have been verified. Live
+readback shows the insufficient-evidence grant expired and reached `PAID`
+after sponsor withdrawal, with zero balance and outstanding claims. Receipt
+and balance reconciliation is recorded in `docs/LIVE_STATUS_V6.md`.
+GenVM lint/validation, 18 V6 Direct Mode contract tests, five frontend receipt
+and journal tests, and the production build pass. Unsupported commit counts
+above 250 and invalid npm thresholds/periods are rejected before custody. The
+local frontend targets V6 after source parity and canonical readback checks.
+Live positive npm-backed payout and the browser wallet journey remain unverified.
+See `docs/SPECIFICATION_V6.md` and
+`docs/ADVERSARIAL_AUDIT_V6.md`.
 
 The patched V4 source has passed GenVM lint, 31 direct-contract tests and a
 production frontend build. A no-funds GenVM probe reached all five fixed GitHub
@@ -30,7 +43,7 @@ paths and found four contract issues plus a frontend receipt issue. Those fixes
 are now deployed as V5 at `0x6027309e88CB1f51f891Eea85436ad80347592DB`.
 Source parity and a complete PARTIAL lifecycle are verified: 500,000,000,000 wei
 went to each party and all reserves returned to zero. The V4 address remains
-historical evidence; the frontend accepts only V5. Three direct V5 negative
+historical evidence; the current local frontend accepts only V6. Three direct V5 negative
 calls also finalized with the expected `NOT_CLAIMABLE`, `GRANT_TERMINAL` and
 `GRANT_NOT_FOUND` errors, while authoritative accounting remained unchanged.
 See `evidence-package/v5-live-lifecycle.json` and
@@ -41,9 +54,10 @@ outcome matrix was rerun live on V5.
 
 ```powershell
 cd 'G:\Genlayer 4\ImpactRail'
-genvm-lint contracts/impact_rail.py
-gltest -q
+genvm-lint check contracts/impact_rail_v6.py
+pytest -q tests/test_impact_rail_v6.py
 cd frontend
+node --test transactions.test.mjs
 npm run build
 ```
 
@@ -51,5 +65,5 @@ The test fixtures are synthetic canonical API responses for Direct Mode only;
 they do not claim live GitHub, npm, Snapshot or Studionet evidence. See
 `docs/RELEASE_EVIDENCE.md` for the honest release checklist.
 
-The current V5 source has no constructor inputs. Its short Studionet evidence
-window is fixed at 120–900 seconds.
+The V6 source has no constructor inputs. Its short Studionet evidence window is
+fixed at 120–900 seconds. V5 and earlier addresses remain historical evidence.
