@@ -28,8 +28,11 @@ locked funds and both claimable ledgers are zero.
 ## Scope and remaining release work
 
 This demonstrates the missing-source rejection and expiry/refund path only.
-Positive npm-backed payout, the complete browser wallet journey, V6 Cloudflare
-deployment, GitHub publication and deployment-transaction capture remain
+Production frontend deployment and GitHub publication are complete. Both
+`https://impactrail.pages.dev` and immutable deployment
+`https://82bd2057.impactrail.pages.dev` returned HTTP 200; the served bundle
+contains the V6 address and no V5 address. Positive npm-backed payout, the
+complete browser-wallet journey and deployment-transaction capture remain
 unverified. Earlier-version payout evidence does not establish a V6 payout.
 
 Local regression rerun: 74 contract tests and 5 frontend transaction tests pass.

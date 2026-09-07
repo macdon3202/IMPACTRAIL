@@ -11,6 +11,13 @@
   "live_evidence": "evidence-package/v6-live-lifecycle.json",
   "live_positive_payout": "NOT_VERIFIED",
   "browser_wallet_journey": "NOT_VERIFIED",
+  "frontend": {
+    "production": "https://impactrail.pages.dev",
+    "deployment": "https://82bd2057.impactrail.pages.dev",
+    "http": "PASS",
+    "v6_address_in_bundle": true,
+    "stale_v5_address_in_bundle": false
+  },
   "local_gates": {
     "genvm_lint_validation": "PASS",
     "direct_mode_contract_tests": "18 PASS",

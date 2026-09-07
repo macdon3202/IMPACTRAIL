@@ -17,6 +17,8 @@ Date: 2026-09-07
 4. **Redeployment parity:** PASS at `0xbA2DdBE10249E870EC2CF87A1b8C4e41553A995a`;
    deployed and reviewed source hashes both equal `9aa7e0e2dd2e352bd5d386657d2bdaec137fab48c1d0002966db61772e8bf9d4`.
 5. **Production frontend:** V6 fields, bounds, address and version gate are configured.
+   Cloudflare production and immutable deployment URLs return HTTP 200; the
+   served bundle contains V6 and does not contain the V5 address.
 6. **Full frontend lifecycle:** contract-level fail-closed and refund lifecycle
    is PASS. A browser-wallet journey and live positive npm payout remain pending
    and are not represented as completed.
