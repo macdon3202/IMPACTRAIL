@@ -1,0 +1,32 @@
+name: Publish ImpactRail V6 canonical release
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/impactrail-v6-npm-release.md
+      - .github/workflows/publish-impactrail-v6-release.yml
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create immutable-target release if absent
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: impactrail-v6-npm-1.0.0
+          TARGET: c526aa3faaa8299f571b8598f56423e77084178b
+        run: |
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "Release already exists"
+            exit 0
+          fi
+          gh release create "$TAG" \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$TARGET" \
+            --title "ImpactRail V6 canonical npm adoption release" \
+            --notes-file .github/impactrail-v6-npm-release.md
