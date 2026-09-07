@@ -1,0 +1,27 @@
+{
+  "name": "@macdon3202/impactrail-canonical",
+  "version": "1.0.0",
+  "description": "Canonical npm artifact for independently attributable ImpactRail adoption verification.",
+  "type": "module",
+  "main": "index.js",
+  "exports": "./index.js",
+  "files": [
+    "index.js",
+    "README.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/macdon3202/IMPACTRAIL.git",
+    "directory": "npm-package"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": false
+  },
+  "keywords": [
+    "genlayer",
+    "public-goods",
+    "impact-verification"
+  ],
+  "license": "MIT"
+}
