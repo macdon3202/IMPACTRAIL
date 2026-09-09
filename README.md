@@ -3,22 +3,25 @@
 Live frontend: https://impactrail.pages.dev
 
 ImpactRail is a GenLayer intelligent contract and companion frontend for a
-public-goods grant workflow. The V7 candidate requires independently attributable adoption:
+public-goods grant workflow. The V8 candidate requires reproducible delivery:
 official npm Registry metadata must bind an exact package version to the sealed
-GitHub repository and commit, and the npm Downloads API must prove a sealed
-historical threshold. GitHub commit, raw artifact and release evidence remain
+GitHub repository and commit, and a successful GitHub Actions run must bind the
+exact verification commit, workflow bytes and completed job steps. GitHub commit,
+raw artifact and release evidence remain
 mandatory provenance, but project-authored narrative can no longer unlock a
 payout by itself. Validators reacquire every source independently and the
 contract derives the verdict, amount and recipient deterministically.
 
 ## Status
 
-V7 is ready for deployment review but is not deployed. It replaces payable
-grant creation with non-payable validation followed by explicit funding. Invalid
+V8 is the current candidate and is not deployed. It removes the delayed npm
+Downloads dependency and uses canonical npm identity plus commit-pinned GitHub
+run/job evidence that can complete in the same day. It retains V7's replacement
+of payable grant creation with non-payable validation followed by explicit funding. Invalid
 payable funding is credited to a withdrawable sender refund rather than relying
-on transaction rollback. GenVM lint/validation, 22 V7 Direct Mode tests, the
-96-test repository suite, five frontend tests and the production build pass.
-See `docs/SPECIFICATION_V7.md` and `docs/ADVERSARIAL_AUDIT_V7.md`.
+on transaction rollback. GenVM lint/validation, 23 V8 Direct Mode tests, five
+frontend tests and the production build pass. See `docs/SPECIFICATION_V8.md`
+and `docs/ADVERSARIAL_AUDIT_V8.md`. V7 was never deployed.
 
 V6 is deployed at `0xbA2DdBE10249E870EC2CF87A1b8C4e41553A995a`
 but is superseded and must not receive new funds. A 2026-09-09 live test showed
@@ -32,7 +35,7 @@ and balance reconciliation is recorded in `docs/LIVE_STATUS_V6.md`.
 GenVM lint/validation, 18 V6 Direct Mode contract tests, five frontend receipt
 and journal tests, and the production build pass. Unsupported commit counts
 above 250 and invalid npm thresholds/periods are rejected before custody. The
-local frontend now requires V7 and remains transaction-disabled until a V7
+local frontend now requires V8 and remains transaction-disabled until a V8
 address passes its version gate.
 Live positive npm-backed payout and the browser wallet journey remain unverified.
 The public package, exact Registry `gitHead`, commit-bound GitHub Release and a
@@ -69,8 +72,8 @@ outcome matrix was rerun live on V5.
 
 ```powershell
 cd 'G:\Genlayer 4\ImpactRail'
-genvm-lint check contracts/impact_rail_v7.py
-pytest -q tests/test_impact_rail_v7.py
+genvm-lint check contracts/impact_rail_v8.py
+pytest -q tests/test_impact_rail_v8.py
 cd frontend
 node --test transactions.test.mjs
 npm run build
@@ -80,5 +83,5 @@ The test fixtures are synthetic canonical API responses for Direct Mode only;
 they do not claim live GitHub, npm, Snapshot or Studionet evidence. See
 `docs/RELEASE_EVIDENCE.md` for the honest release checklist.
 
-The V7 source has no constructor inputs. Its short Studionet evidence window is
+The V8 source has no constructor inputs. Its short Studionet evidence window is
 fixed at 120–900 seconds. V6 and earlier addresses remain historical evidence.

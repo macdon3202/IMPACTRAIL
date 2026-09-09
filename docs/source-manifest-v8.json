@@ -1,0 +1,21 @@
+{
+  "version": "IMPACT_RAIL_V8",
+  "contract_source": "contracts/impact_rail_v8.py",
+  "contract_sha256": "7d29f563af347b1a796d67e7464c4c25e13aeb526e070413f29b1a54a5da6b4c",
+  "constructor_args": [],
+  "canonical_workflow": ".github/workflows/verify-impactrail-v8.yml",
+  "canonical_workflow_sha256": "a7d4b7201f5bef5a07da2eb4e3e6ad3176d181bf016d9cf95b55a15b97fff6e1",
+  "verification_commit": "PENDING_COMMIT",
+  "verification_run_id": "PENDING_RUN",
+  "deployment": "PENDING",
+  "source_parity": "NOT_YET_VERIFIED",
+  "live_positive_payout": "NOT_YET_RUN",
+  "live_invalid_funding_recovery": "NOT_YET_RUN",
+  "browser_wallet_journey": "NOT_YET_RUN",
+  "local_gates": {
+    "genvm_lint_validation": "PASS",
+    "direct_mode_contract_tests": "23 PASS",
+    "frontend_transaction_tests": "5 PASS",
+    "frontend_production_build": "PASS"
+  }
+}

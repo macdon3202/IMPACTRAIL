@@ -1,4 +1,4 @@
-export const VERSION = 'IMPACT_RAIL_V7';
+export const VERSION = 'IMPACT_RAIL_V8';
 export const NETWORK = 'studionet';
 export const JOURNAL = 'impactrail_transactions_v1';
 export const serialize = (value) => JSON.stringify(value, (_, v) => typeof v === 'bigint' ? v.toString() : v);

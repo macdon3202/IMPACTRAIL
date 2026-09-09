@@ -1,0 +1,69 @@
+name: Verify ImpactRail V8 canonical delivery
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - contracts/impact_rail_v8.py
+      - tests/test_impact_rail_v8.py
+      - frontend/**
+      - .github/workflows/verify-impactrail-v8.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-canonical:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sealed source
+        uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Verify npm registry binding
+        shell: bash
+        run: |
+          node - <<'NODE'
+          const url = 'https://registry.npmjs.org/%40macdon3202%2Fimpactrail-canonical/1.0.0';
+          const metadata = await fetch(url).then(async response => {
+            if (!response.ok) throw new Error(`registry ${response.status}`);
+            return response.json();
+          });
+          if (metadata.name !== '@macdon3202/impactrail-canonical') throw new Error('name mismatch');
+          if (metadata.version !== '1.0.0') throw new Error('version mismatch');
+          if (metadata.gitHead !== 'c526aa3faaa8299f571b8598f56423e77084178b') throw new Error('gitHead mismatch');
+          if (metadata.repository?.url !== 'git+https://github.com/macdon3202/IMPACTRAIL.git') throw new Error('repository mismatch');
+          NODE
+
+      - name: Install published package
+        run: npm install --ignore-scripts --package-lock=false --prefix .canonical-consumer @macdon3202/impactrail-canonical@1.0.0
+
+      - name: Install contract test tools
+        run: python -m pip install genlayer-py==0.16.3 genlayer-test==0.29.2 genvm-linter==0.11.0
+
+      - name: Validate V8 contract
+        run: |
+          genvm-lint check contracts/impact_rail_v8.py
+          genvm-lint validate contracts/impact_rail_v8.py
+
+      - name: Run V8 contract tests
+        run: pytest -q tests/test_impact_rail_v8.py
+
+      - name: Install frontend dependencies
+        run: npm ci --prefix frontend
+
+      - name: Test frontend journal
+        run: node --test frontend/transactions.test.mjs
+
+      - name: Build production frontend
+        run: npm --prefix frontend run build
