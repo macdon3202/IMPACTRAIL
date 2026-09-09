@@ -1,0 +1,13 @@
+{
+  "contract": "0xCb798Ac755495c0d372e6E71106eb6903D8aa5d5",
+  "purpose": "Diagnostic only; no custody, payout, or eligibility decision",
+  "source_sha256": "61ef066715434ae1c30a95efc2d2d69f61ac58f3c21344eddbc27fff89f417f6",
+  "result": "PASS",
+  "sources": [
+    {"name":"npm_registry","bytes":1585,"sha256":"3083ba5c2ac30ad4f4b0558e3d32241edfff7e064903a278eef74b85541ed656","round_1":"0x22aea984ce3a940877eccad6b16731c8434c3cb99bf4d1763ea74547b117c2f6","round_2":"0x2992b17b06b149011b699df5d965fcf5ef1626db8543cbca74765ddfbc10c250"},
+    {"name":"github_actions_run","bytes":12303,"sha256":"b79f866dfce186fb9dfe56299ff551eb7c89acebfb8b1e74d34564d23ce0490d","round_1":"0x283183096c369774245ac020837ecacd8608d5de5ed22e6019328c926b172793","round_2":"0xdf5894eefdd5bf3fec20b441ad9f856e0862ad8d0c3322da374572d3834863f6"},
+    {"name":"github_actions_jobs","bytes":3598,"sha256":"25f4e7364e3f222f19fa08c5afa1d17957c7ae11581b9d81397918b14cfeb4be","round_1":"0xcb5b14951b3c35c20c8c5033eaeb834d881094430bfe72f222aee29ded0d4d6a","round_2":"0x815efd8c0aad93f9d58d989462745758ef725d2a6725e765711bc4663d731f66"},
+    {"name":"raw_workflow","bytes":2341,"sha256":"a7d4b7201f5bef5a07da2eb4e3e6ad3176d181bf016d9cf95b55a15b97fff6e1","round_1":"0xf264117006e97ff56ca99cb1093a1ae66d5b695c3df8f961ab6eba4bc631c2e7","round_2":"0x57f9a5086210631289211fa46c81235905c2fcbcbc8c9631c85e857db6826a98"}
+  ],
+  "inference": "Every V8 canonical CI source is individually reachable and deterministic. V8's bundled multi-fetch execution is the remaining failure boundary; V9 must stage objective acquisition across transactions."
+}
