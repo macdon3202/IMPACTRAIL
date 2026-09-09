@@ -26,6 +26,10 @@ are 136/136 and frontend transaction tests are 6/6. See
 `docs/SPECIFICATION_V9.md`, `docs/ADVERSARIAL_AUDIT_V9.md` and
 `evidence-package/v9-live-lifecycle.json`.
 
+Complete human-readable production lifecycle evidence, transaction links,
+authoritative accounting readback and limitations are consolidated in
+[`docs/RELEASE_EVIDENCE.md`](docs/RELEASE_EVIDENCE.md).
+
 V6 is deployed at `0xbA2DdBE10249E870EC2CF87A1b8C4e41553A995a`
 but is superseded and must not receive new funds. A 2026-09-09 live test showed
 that three payable rollbacks left 3,000,000,000,000 wei outside grant accounting.
