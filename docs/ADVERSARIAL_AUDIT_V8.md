@@ -1,6 +1,6 @@
 # ImpactRail V8 adversarial audit
 
-Status: candidate awaiting its public canonical workflow run and deployment.
+Status: canonical workflow verified; candidate awaiting deployment.
 
 The first public run (`34325485141`) failed before contract execution because
 the test harness selected its unavailable latest release (`v0.3.0-rc7`) instead
@@ -8,6 +8,15 @@ of the contract's documented `v0.2.16` runtime. npm binding, package installatio
 and contract validation had succeeded. The failure is retained in GitHub Actions
 history; Direct Mode now explicitly selects `v0.2.16`, whose official release
 artifact remains available, and requires a fresh complete run.
+
+The replacement public run
+[`34328794332`](https://github.com/macdon3202/IMPACTRAIL/actions/runs/34328794332)
+completed successfully at commit
+`3469b3ff604d4e2d72bf1da3534f9bd427fd5d58`. It passed npm Registry
+binding, installation of the published package, GenVM lint and validation,
+all 23 V8 Direct Mode tests, all 5 frontend journal tests and the production
+frontend build. The failed predecessor remains visible rather than being
+concealed or overwritten.
 
 ## Steward-request mapping
 
@@ -32,6 +41,14 @@ artifact remains available, and requires a fresh complete run.
 - V8 Direct Mode: 23 PASS;
 - frontend journal tests: 5 PASS;
 - production frontend build: PASS.
+
+## Canonical verification
+
+- GitHub commit: `3469b3ff604d4e2d72bf1da3534f9bd427fd5d58`;
+- workflow run: `34328794332`, conclusion `success`;
+- workflow path: `.github/workflows/verify-impactrail-v8.yml`;
+- workflow SHA-256: `a7d4b7201f5bef5a07da2eb4e3e6ad3176d181bf016d9cf95b55a15b97fff6e1`;
+- contract SHA-256: `7d29f563af347b1a796d67e7464c4c25e13aeb526e070413f29b1a54a5da6b4c`.
 
 ## Honest limitations
 
