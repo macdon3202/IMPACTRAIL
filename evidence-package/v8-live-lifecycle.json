@@ -1,0 +1,47 @@
+{
+  "contract": "0xbD64f40726d717B0f436AAf7c85c2C1f46692838",
+  "version": "IMPACT_RAIL_V8",
+  "date": "2026-09-09",
+  "result": "FAIL_CLOSED_AND_FULLY_RECOVERED",
+  "positive_payout": "NOT_ACHIEVED",
+  "canonical_failure": "CANONICAL_VERIFICATION_UNAVAILABLE",
+  "source_bindings_before_failure": {
+    "repo_identity": "YES",
+    "commit_binding": "YES",
+    "coverage": "YES",
+    "artifact_binding": "YES",
+    "release_binding": "YES",
+    "package_binding": "UNKNOWN",
+    "adoption_binding": "UNKNOWN"
+  },
+  "transactions": {
+    "register_beneficiary": "0x57621ced9e2cbe7979cd8f0d2b21375a2faa8199539d575e9db1f07dcff4fcfe",
+    "invalid_funding": "0xf157fb628ab397d0fabf9f9b4703499b2a289ffad3380db7120cdc6699592d20",
+    "withdraw_invalid_funding": "0x88ce2aeca2cab310abc438e3b26af9c817543fb5a6d6573790c4f8a5e15688d3",
+    "create_draft": "0x84d2a7e5a5772c4ddfd935f1c9ee3bc0ccd1b78101d655b763d1823ceaba6957",
+    "fund_draft": "0x1cb819109ce82816b08a4e17433ca55cf590595477248fb58b1031807b08094a",
+    "evaluate_attempt_1": "0xe93c68cc6bfdcfe3a2bb7c4004159bcd52729ca3ec18fb7a5fb7a5d523dda3d8",
+    "evaluate_attempt_2": "0x8ee5a8af777766d67d744d1d8c4f2d87fb6d58d4cdb34059351ca9d887f537fc",
+    "evaluate_attempt_3": "0xb50d558c1ed9bbc34914390861e631bc04853cd3f4bdcefde3bc7bd2a362d257",
+    "expire": "0xc0870c34f59a07f324f72dc2193f8f501931a7d233602ce079aec6f6398d7768",
+    "withdraw_sponsor_refund": "0x84362ab15289b4da37cbbf3cc50bb7ee9c597c2e07ee64fa7b6999c4c1ba7691"
+  },
+  "final_authoritative_readback": {
+    "grant_state": "PAID",
+    "attempt_count": 3,
+    "locked": "0",
+    "beneficiary_claimable": "0",
+    "sponsor_claimable": "0",
+    "unallocated_claimable": "0",
+    "contract_balance": "0",
+    "deposited": "2000000000000",
+    "outbound_requested": "2000000000000"
+  },
+  "notes": [
+    "All recorded transactions reached successful GenVM execution and accepted consensus before state readback.",
+    "Two RPC rate-limit failures occurred before a transaction hash and were not resubmitted as successful transactions.",
+    "The first 1e12 wei was invalid funding and was recovered through withdraw_unallocated.",
+    "The second 1e12 wei funded grant 0, remained locked through all failed attempts, then was returned after expiry.",
+    "V8 must not be presented as having a successful live beneficiary payout."
+  ]
+}

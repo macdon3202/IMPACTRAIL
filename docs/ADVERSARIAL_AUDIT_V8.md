@@ -1,6 +1,6 @@
 # ImpactRail V8 adversarial audit
 
-Status: canonical workflow verified; candidate awaiting deployment.
+Status: deployed and custody-safe, but live positive payout not achieved.
 
 The first public run (`34325485141`) failed before contract execution because
 the test harness selected its unavailable latest release (`v0.3.0-rc7`) instead
@@ -58,4 +58,23 @@ the project repository, so the contract requires GitHub's independent run/job
 records, npm's independent package record and exact workflow bytes; it does not
 pretend the project is an organizationally independent auditor.
 
-No V8 deployment or live result is claimed yet.
+## Studionet lifecycle result
+
+V8 was deployed at `0xbD64f40726d717B0f436AAf7c85c2C1f46692838`.
+The initial config readback matched `IMPACT_RAIL_V8` and the seven documented
+canonical sources. Invalid funding of `1000000000000` wei was credited to the
+sender and fully recovered through `withdraw_unallocated`; the authoritative
+contract balance returned to zero.
+
+Grant 0 then completed DRAFT creation and exact funding. Three independent
+evaluation transactions consistently returned `CANONICAL_VERIFICATION_UNAVAILABLE`.
+Repository, commit coverage, artifact digest and release binding were all `YES`,
+but package/adoption binding remained `UNKNOWN`. Funds stayed locked through all
+attempts. After the sealed deadline, expiry and sponsor withdrawal succeeded;
+the final authoritative readback shows state `PAID`, all locked/claimable ledgers
+zero, and contract balance zero.
+
+This is a successful fail-closed and recovery lifecycle, not a successful live
+beneficiary payout. V8 must not be submitted as satisfying the steward's full
+positive-path request. The next revision must identify the unavailable endpoint
+explicitly and use a canonical source proven reachable from Studionet validators.
