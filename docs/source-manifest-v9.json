@@ -14,7 +14,13 @@
   "live_staged_gates": "PASS_15_OF_15",
   "live_positive_payout": "PASS_PARTIAL_50_PERCENT",
   "live_final_accounting": "PASS_ZERO_BALANCE_ZERO_CLAIMABLE",
-  "production_frontend": "CONFIGURED_FOR_V9",
+  "production_frontend": {
+    "status": "PASS_HTTP_200_AND_BUNDLE_PARITY",
+    "url": "https://impactrail.pages.dev",
+    "immutable_deployment": "https://a62e649f.impactrail.pages.dev",
+    "bundle_version": "IMPACT_RAIL_V9",
+    "bundle_contract": "0x8bc22E809b85EF6568DD1083108F495f33d276FA"
+  },
   "local_gates": {
     "genvm_lint_validation": "PASS",
     "v9_direct_mode": "9 PASS",
