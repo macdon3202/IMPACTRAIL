@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {receiptState,saveJournal,loadJournal,normalizeHash} from './src/transactions.js';
+import {receiptState,receiptReadable,saveJournal,loadJournal,normalizeHash} from './src/transactions.js';
 test('finalized contract execution error must not appear accepted',()=>{
  const result=receiptState({statusName:'FINALIZED',consensus_data:{leader_receipt:[{execution_result:'ERROR',result:{status:'contract_error',payload:'FAIL'}}]}});
  assert.equal(result.failed,true);assert.equal(result.accepted,false);
@@ -13,3 +13,4 @@ test('pending journal survives reload',()=>{
  saveJournal(storage,rows);assert.equal(loadJournal(storage)[0].hash,rows[0].hash);
 });
 test('ambiguous wallet response is rejected',()=>assert.throws(()=>normalizeHash({}),/ambiguous/));
+test('create return id is recovered from successful receipt',()=>assert.equal(receiptReadable({consensus_data:{leader_receipt:[{execution_result:'SUCCESS',result:{payload:{readable:'0'}}}]}}),0));

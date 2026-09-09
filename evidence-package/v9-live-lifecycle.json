@@ -1,0 +1,30 @@
+{
+  "evidence_type": "honest_live_lifecycle",
+  "network": "studionet",
+  "contract": "0x8bc22E809b85EF6568DD1083108F495f33d276FA",
+  "version_readback": "IMPACT_RAIL_V9",
+  "grant_id": 0,
+  "transactions": {
+    "register_wallet": "0x494347c1229fabfa3ce58dbe744e8ea558ef553a6c330a6b2552a375bc555b10",
+    "create_grant": "0x727183874bde653236897611465710c0dd7d3dd7c421f29c8e310a7d251d29c4",
+    "fund_grant": "0x019ffc28cf7f78d57ec8f8f79564f3924b0746e14cf89b3ce56f04771ca30473",
+    "verify_package": "0x500e51e023eaeac05a2b7adb53001c22a704d83b5682ce52f1bd03e6dd4bbed7",
+    "verify_run": "0xdf8a91d5aa542b33a4716057d12840960727c55191facff49531f96d813a11df",
+    "verify_jobs": "0x9c7e4affdfa6d8860692d08479a2e30cde6db18ff7695216ec8e136945014a20",
+    "verify_workflow": "0xb6992672ec43dc388439db06c315cf3ec1ff3e0c76a322b1c19b7cd8321bdc09",
+    "evaluate_grant": "0xe32e7656d7e07c39996dc1a263e35bc42ba119593bd02f1b33804551110aa858",
+    "beneficiary_withdraw": "0x62da32c22d4e0f3b5c281904c6d79b51569281fd13d05651cc685861e63b057f",
+    "sponsor_withdraw": "0x8c3e53f03401a466b089c7f15088124774405730b5bffc8a30c987e19ff96e7c"
+  },
+  "objective_gates": {
+    "mask": 15,
+    "terms_digest": "680d84372df4db5d8de1c0eb844761ce89b58dc014f74233c104416554fe7170",
+    "package_digest": "3083ba5c2ac30ad4f4b0558e3d32241edfff7e064903a278eef74b85541ed656",
+    "run_digest": "b3c695c4c2c92c5180ac8b13ddae772cab75c744978c5cc104f5c3575073f3b8",
+    "jobs_digest": "a834bdce1da5423a3f6e4e8be2f87f0322e5f4809296dbca2c7a534560f3b257",
+    "workflow_digest": "baccc20398a5161a1097c278473d914037f89b5ce230a06d472c4f0ecfe859ca"
+  },
+  "settlement": {"verdict":"PARTIAL","beneficiary_wei":"500000000000","sponsor_wei":"500000000000","final_state":"PAID"},
+  "final_authoritative_readback": {"balance":"0","deposited":"1000000000000","locked":"0","outbound_requested":"1000000000000","beneficiary_claimable":"0","sponsor_claimable":"0","unallocated_claimable":"0"},
+  "limitations": ["Semantic delivery classification produced PARTIAL rather than FULL; the contract applied the sealed 50 percent partial-payout rule.","This file records observed results and does not claim browser-wallet automation was used for these calls."]
+}

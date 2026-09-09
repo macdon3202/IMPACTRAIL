@@ -1,4 +1,4 @@
-export const VERSION = 'IMPACT_RAIL_V8';
+export const VERSION = 'IMPACT_RAIL_V9';
 export const NETWORK = 'studionet';
 export const JOURNAL = 'impactrail_transactions_v1';
 export const serialize = (value) => JSON.stringify(value, (_, v) => typeof v === 'bigint' ? v.toString() : v);
@@ -15,6 +15,13 @@ export const receiptState = (info) => {
   const failed = ['FAILED', 'REJECTED', 'CANCELLED', 'CANCELED', 'UNDETERMINED'].includes(status) || ['ERROR', 'FAILED', 'REVERT'].includes(execution) || receipts.some(r => r.execution_result === 'ERROR');
   const executionVerified = execution === 'SUCCESS' || (receipts.length > 0 && receipts.every(r => r.execution_result === 'SUCCESS'));
   return {status, execution, failed, accepted: !failed && executionVerified && ['ACCEPTED', 'FINALIZED'].includes(status)};
+};
+export const receiptReadable = (info) => {
+  const receipts = (info?.consensus_data?.leader_receipt ?? []).filter(r => r.result?.payload !== 'idle');
+  const payload = receipts.find(r => r.execution_result === 'SUCCESS')?.result?.payload;
+  const value = payload && typeof payload === 'object' ? payload.readable : payload;
+  if (value === undefined || value === null) return undefined;
+  try { return JSON.parse(value); } catch { return value; }
 };
 export const loadJournal = (storage) => {
   const raw = storage.getItem(JOURNAL); if (!raw) return [];

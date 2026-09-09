@@ -10,15 +10,16 @@
   "verification_run_url": "https://github.com/macdon3202/IMPACTRAIL/actions/runs/34336729341",
   "verification_conclusion": "success",
   "source_probe": "0xCb798Ac755495c0d372e6E71106eb6903D8aa5d5",
-  "deployment": "PENDING",
-  "live_staged_gates": "NOT_YET_RUN",
-  "live_positive_payout": "NOT_YET_RUN",
-  "production_frontend": "NOT_CONFIGURED_UNTIL_LIVE_PASS",
+  "deployment": "0x8bc22E809b85EF6568DD1083108F495f33d276FA",
+  "live_staged_gates": "PASS_15_OF_15",
+  "live_positive_payout": "PASS_PARTIAL_50_PERCENT",
+  "live_final_accounting": "PASS_ZERO_BALANCE_ZERO_CLAIMABLE",
+  "production_frontend": "CONFIGURED_FOR_V9",
   "local_gates": {
     "genvm_lint_validation": "PASS",
     "v9_direct_mode": "9 PASS",
     "full_contract_regression": "136 PASS",
-    "frontend_transaction_tests": "5 PASS",
+    "frontend_transaction_tests": "6 PASS",
     "frontend_build": "PASS"
   }
 }

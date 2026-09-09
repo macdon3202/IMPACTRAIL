@@ -3,7 +3,7 @@
 Live frontend: https://impactrail.pages.dev
 
 ImpactRail is a GenLayer intelligent contract and companion frontend for a
-public-goods grant workflow. The V8 candidate requires reproducible delivery:
+public-goods grant workflow. The deployed V9 requires reproducible delivery:
 official npm Registry metadata must bind an exact package version to the sealed
 GitHub repository and commit, and a successful GitHub Actions run must bind the
 exact verification commit, workflow bytes and completed job steps. GitHub commit,
@@ -14,14 +14,17 @@ contract derives the verdict, amount and recipient deterministically.
 
 ## Status
 
-V8 is the current candidate and is not deployed. It removes the delayed npm
-Downloads dependency and uses canonical npm identity plus commit-pinned GitHub
-run/job evidence that can complete in the same day. It retains V7's replacement
-of payable grant creation with non-payable validation followed by explicit funding. Invalid
-payable funding is credited to a withdrawable sender refund rather than relying
-on transaction rollback. GenVM lint/validation, 23 V8 Direct Mode tests, five
-frontend tests and the production build pass. See `docs/SPECIFICATION_V8.md`
-and `docs/ADVERSARIAL_AUDIT_V8.md`. V7 was never deployed.
+V9 is deployed at `0x8bc22E809b85EF6568DD1083108F495f33d276FA`.
+It splits canonical verification into four independent validator gates for npm
+identity, GitHub Actions run, completed jobs and commit-pinned workflow bytes.
+Unsupported commit thresholds are rejected in the non-payable draft call before
+custody. The live funded lifecycle reached gate mask 15, settled PARTIAL, paid
+both parties and ended with zero balance and zero claimable accounting. The
+frontend is configured for V9 and reconciles receipt execution, consensus and
+authoritative state without automatic resubmission. Contract regression tests
+are 136/136 and frontend transaction tests are 6/6. See
+`docs/SPECIFICATION_V9.md`, `docs/ADVERSARIAL_AUDIT_V9.md` and
+`evidence-package/v9-live-lifecycle.json`.
 
 V6 is deployed at `0xbA2DdBE10249E870EC2CF87A1b8C4e41553A995a`
 but is superseded and must not receive new funds. A 2026-09-09 live test showed

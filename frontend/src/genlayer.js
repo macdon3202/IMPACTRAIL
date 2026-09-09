@@ -1,6 +1,6 @@
 import { createClient } from 'genlayer-js';
 import { studionet } from 'genlayer-js/chains';
-import { normalizeHash, receiptState, VERSION, sameAddress } from './transactions';
+import { normalizeHash, receiptState, VERSION, sameAddress } from './transactions.js';
 
 export const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS || '';
 export const makeReadClient = () => createClient({chain: studionet});
