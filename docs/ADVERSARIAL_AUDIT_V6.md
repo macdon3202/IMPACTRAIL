@@ -1,5 +1,10 @@
 # ImpactRail V6 adversarial audit
 
+> Superseded on 2026-09-09. A later live payable-negative test proved that
+> rollback left attached value in the contract outside grant accounting. See
+> `PAYABLE_ROLLBACK_INCIDENT_V6.md`. Earlier refund-path results remain factual,
+> but V6 must not receive new funds.
+
 Date: 2026-09-07
 
 ## Steward requests addressed

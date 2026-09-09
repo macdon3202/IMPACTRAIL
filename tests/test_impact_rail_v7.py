@@ -1,0 +1,328 @@
+import hashlib
+import json
+
+import pytest
+
+
+CONTRACT = "contracts/impact_rail_v7.py"
+A = bytes.fromhex("11" * 20)
+B = bytes.fromhex("22" * 20)
+B_HEX = "0x" + "22" * 20
+BASE = "a" * 40
+TARGET = "b" * 40
+ARTIFACT = b"canonical project-authored artifact"
+ARTIFACT_SHA = hashlib.sha256(ARTIFACT).hexdigest()
+AMOUNT = 1000
+START_TS = 1788652800
+NOW = "2026-09-07T12:00:00+00:00"
+
+
+def deploy(vm, direct_deploy):
+    vm.warp(NOW)
+    vm.strict_mocks = True
+    contract = direct_deploy(CONTRACT)
+    from genlayer.py.types import Address
+    original = vm.sender
+    vm.sender = Address(B_HEX)
+    contract.register_wallet()
+    vm.sender = original
+    return contract
+
+
+def release_body():
+    return "\n".join((
+        "impactrail_repo: impactrail/demo",
+        "impactrail_target_commit: " + TARGET,
+        "impactrail_artifact_path: evidence/report.md",
+        "impactrail_artifact_sha256: " + ARTIFACT_SHA,
+        "impactrail_release_tag: v1.0.0",
+        "impactrail_beneficiary: " + B_HEX,
+        "impactrail_amount_wei: 1000",
+    ))
+
+
+def payloads(downloads=500, repository="https://github.com/impactrail/demo.git", git_head=TARGET, period_package="impact-package"):
+    repo = {"visibility": "public", "full_name": "impactrail/demo"}
+    commit = {"sha": TARGET, "commit": {"message": "release", "author": {"date": "2026-09-06T10:00:00Z"}}}
+    compare = {"status": "ahead", "ahead_by": 1, "total_commits": 1, "base_commit": {"sha": BASE}, "commits": [{"sha": TARGET, "author": {"login": "builder"}, "commit": {"author": {"date": "2026-09-06T10:00:00Z"}}}]}
+    release = {"tag_name": "v1.0.0", "target_commitish": TARGET, "draft": False, "prerelease": False, "published_at": "2026-09-06T11:00:00Z", "body": release_body()}
+    metadata = {"name": "impact-package", "version": "1.0.0", "repository": {"url": repository}, "gitHead": git_head, "description": "Open-source public infrastructure", "keywords": ["public-good"], "license": "MIT"}
+    adoption = {"package": period_package, "start": "2026-08-01", "end": "2026-08-31", "downloads": downloads}
+    return repo, commit, compare, release, metadata, adoption
+
+
+def mocks(vm, downloads=500, repository="https://github.com/impactrail/demo.git", git_head=TARGET, period_package="impact-package", fit="YES", status=200):
+    repo, commit, compare, release, metadata, adoption = payloads(downloads, repository, git_head, period_package)
+    vm.mock_web(r"api\.github\.com/repos/impactrail/demo$", {"status": status, "body": json.dumps(repo)})
+    vm.mock_web(r"api\.github\.com/repos/impactrail/demo/commits/", {"status": status, "body": json.dumps(commit)})
+    vm.mock_web(r"api\.github\.com/repos/impactrail/demo/compare/", {"status": status, "body": json.dumps(compare)})
+    vm.mock_web(r"raw\.githubusercontent\.com/impactrail/demo/", {"status": status, "body": ARTIFACT})
+    vm.mock_web(r"api\.github\.com/repos/impactrail/demo/releases/tags/", {"status": status, "body": json.dumps(release)})
+    vm.mock_web(r"registry\.npmjs\.org/impact-package/1\.0\.0", {"status": status, "body": json.dumps(metadata)})
+    vm.mock_web(r"api\.npmjs\.org/downloads/point/2026-08-01:2026-08-31/impact-package", {"status": status, "body": json.dumps(adoption)})
+    vm.mock_llm("IMPACT_RAIL_V7", {"delivery": "FULL", "materiality": "SUBSTANTIVE"} if fit == "YES" else {"delivery": "NONE", "materiality": "COSMETIC"})
+
+
+def create(contract, vm, minimum_commits=1, minimum_downloads=250, value=AMOUNT,
+           period_start="2026-08-01", period_end="2026-08-31"):
+    args = [B_HEX, AMOUNT, "impactrail", "demo", BASE, TARGET, "evidence/report.md", ARTIFACT_SHA, "v1.0.0",
+            "Fund an independently adopted open-source public infrastructure package.", minimum_commits, 1, START_TS, 900, 5000,
+            "impact-package", "1.0.0", period_start, period_end, minimum_downloads]
+    grant_id = contract.create_grant(*args)
+    vm.value = value
+    vm.deal(vm._contract_address, vm._balances.get(vm._contract_address, 0) + value)
+    try:
+        result = contract.fund_grant(grant_id)
+        if value == AMOUNT:
+            assert result == "FUNDED"
+        return grant_id
+    finally:
+        vm.value = 0
+
+def test_config_exposes_objective_sources_and_bounds(direct_vm, direct_deploy):
+    contract = deploy(direct_vm, direct_deploy)
+    config = contract.get_config()
+    assert config["version"] == "IMPACT_RAIL_V7"
+    assert config["max_verifiable_commits"] == 250
+    assert config["max_download_threshold"] == 1_000_000
+    assert config["max_attempts"] == 3
+    assert "npm-downloads-api" in config["sources"]
+
+
+@pytest.mark.parametrize("commits,error", [(251, "INVALID_COVERAGE_WINDOW"), (1000, "INVALID_COVERAGE_WINDOW")])
+def test_unsupported_commit_threshold_rejected_before_custody(direct_vm, direct_deploy, commits, error):
+    contract = deploy(direct_vm, direct_deploy)
+    before = contract.get_accounting()
+    with direct_vm.expect_revert(error):
+        create(contract, direct_vm, minimum_commits=commits)
+    assert contract.get_accounting() == before
+    assert contract.get_config()["version"] == "IMPACT_RAIL_V7"
+
+
+def test_objective_adoption_happy_path(direct_vm, direct_deploy):
+    contract = deploy(direct_vm, direct_deploy)
+    create(contract, direct_vm)
+    mocks(direct_vm, downloads=500)
+    from genlayer.py.types import Address
+    direct_vm.sender = Address(B_HEX)
+    assert contract.evaluate_grant(0) == "VERIFIED"
+    grant = contract.get_grant(0)
+    assert grant["state"] == "VERIFIED_CLAIMABLE"
+    assert grant["observation"]["package_binding"] == "YES"
+    assert grant["observation"]["adoption_binding"] == "YES"
+
+
+def test_project_authored_narrative_cannot_bypass_missing_adoption(direct_vm, direct_deploy):
+    contract = deploy(direct_vm, direct_deploy)
+    create(contract, direct_vm)
+    mocks(direct_vm, downloads=249, fit="YES")
+    from genlayer.py.types import Address
+    direct_vm.sender = Address(B_HEX)
+    assert contract.evaluate_grant(0) == "REJECTED"
+    assert contract.get_grant(0)["reason"] == "OBJECTIVE_ADOPTION_BELOW_THRESHOLD"
+    assert contract.get_grant(0)["state"] == "REFUND_CLAIMABLE"
+
+
+@pytest.mark.parametrize("kwargs", [
+    {"repository": "https://github.com/other/repo.git"},
+    {"git_head": "c" * 40},
+    {"period_package": "other-package"},
+])
+def test_npm_object_and_period_binding_fail_closed(direct_vm, direct_deploy, kwargs):
+    contract = deploy(direct_vm, direct_deploy)
+    create(contract, direct_vm)
+    mocks(direct_vm, **kwargs)
+    from genlayer.py.types import Address
+    direct_vm.sender = Address(B_HEX)
+    assert contract.evaluate_grant(0) == "REJECTED"
+    assert contract.get_grant(0)["state"] == "REFUND_CLAIMABLE"
+
+
+def test_source_unavailable_is_retryable_not_payable(direct_vm, direct_deploy):
+    contract = deploy(direct_vm, direct_deploy)
+    create(contract, direct_vm)
+    mocks(direct_vm, status=503)
+    from genlayer.py.types import Address
+    direct_vm.sender = Address(B_HEX)
+    assert contract.evaluate_grant(0) == "INSUFFICIENT_EVIDENCE"
+    grant = contract.get_grant(0)
+    assert grant["state"] == "INSUFFICIENT_EVIDENCE"
+    assert grant["beneficiary_due"] == "0"
+
+
+def test_terminal_replay_does_not_change_accounting(direct_vm, direct_deploy):
+    contract = deploy(direct_vm, direct_deploy)
+    create(contract, direct_vm)
+    mocks(direct_vm)
+    from genlayer.py.types import Address
+    direct_vm.sender = Address(B_HEX)
+    contract.evaluate_grant(0)
+    before = contract.get_accounting()
+    with direct_vm.expect_revert("GRANT_TERMINAL"):
+        contract.retry_grant(0)
+    assert contract.get_accounting() == before
+
+
+@pytest.mark.parametrize("kwargs,error", [
+    ({"minimum_downloads": 0}, "UNSUPPORTED_DOWNLOAD_THRESHOLD"),
+    ({"minimum_downloads": 1_000_001}, "UNSUPPORTED_DOWNLOAD_THRESHOLD"),
+    ({"period_start": "2026-08-31", "period_end": "2026-08-01"}, "INVALID_ADOPTION_PERIOD"),
+    ({"period_start": "2026-07-01", "period_end": "2026-08-31"}, "INVALID_ADOPTION_PERIOD"),
+])
+def test_unsupported_adoption_terms_rejected_before_custody(direct_vm, direct_deploy, kwargs, error):
+    contract = deploy(direct_vm, direct_deploy)
+    before = contract.get_accounting()
+    with direct_vm.expect_revert(error):
+        create(contract, direct_vm, **kwargs)
+    assert contract.get_accounting() == before
+
+
+def test_model_failure_cannot_bypass_objective_gate(direct_vm, direct_deploy):
+    contract = deploy(direct_vm, direct_deploy)
+    create(contract, direct_vm)
+    mocks(direct_vm)
+    direct_vm._llm_mocks.clear()
+    direct_vm.mock_llm("IMPACT_RAIL_V7", "not-json")
+    from genlayer.py.types import Address
+    direct_vm.sender = Address(B_HEX)
+    assert contract.evaluate_grant(0) == "INSUFFICIENT_EVIDENCE"
+    grant = contract.get_grant(0)
+    assert grant["state"] == "INSUFFICIENT_EVIDENCE"
+    assert grant["beneficiary_due"] == "0"
+
+
+def test_validator_rejects_changed_objective_adoption(direct_vm, direct_deploy):
+    contract = deploy(direct_vm, direct_deploy)
+    create(contract, direct_vm)
+    mocks(direct_vm, downloads=500)
+    from genlayer.py.types import Address
+    direct_vm.sender = Address(B_HEX)
+    contract.evaluate_grant(0)
+    assert direct_vm.run_validator() is True
+    direct_vm._web_mocks.clear()
+    direct_vm._llm_mocks.clear()
+    mocks(direct_vm, downloads=249)
+    assert direct_vm.run_validator() is False
+
+
+def test_verified_withdraw_conserves_accounting(direct_vm, direct_deploy):
+    contract = deploy(direct_vm, direct_deploy)
+    create(contract, direct_vm)
+    mocks(direct_vm)
+    from genlayer.py.types import Address
+    direct_vm.sender = Address(B_HEX)
+    assert contract.evaluate_grant(0) == "VERIFIED"
+    emitted = []
+    def hook(vm, request):
+        if "EthSend" in request:
+            emitted.append(request["EthSend"])
+            return {"ok": None}
+        raise AssertionError(request)
+    direct_vm._gl_call_hook = hook
+    assert contract.withdraw(0) == "TRANSFER_REQUESTED"
+    assert int(emitted[0]["value"]) == AMOUNT
+    accounting = contract.get_accounting()
+    assert accounting["locked"] == accounting["beneficiary_claimable"] == accounting["sponsor_claimable"] == "0"
+    assert accounting["outbound_requested"] == str(AMOUNT)
+    assert contract.get_grant(0)["state"] == "PAID"
+
+
+def test_attempt_cap_preserves_locked_funds(direct_vm, direct_deploy):
+    contract = deploy(direct_vm, direct_deploy)
+    create(contract, direct_vm)
+    mocks(direct_vm, status=503)
+    from genlayer.py.types import Address
+    direct_vm.sender = Address(B_HEX)
+    for instant in ("2026-09-07T12:00:00+00:00", "2026-09-07T12:01:01+00:00", "2026-09-07T12:02:02+00:00"):
+        direct_vm.warp(instant)
+        assert contract.retry_grant(0) == "INSUFFICIENT_EVIDENCE"
+    before = contract.get_accounting()
+    direct_vm.warp("2026-09-07T12:03:03+00:00")
+    with direct_vm.expect_revert("MAX_ATTEMPTS_REACHED"):
+        contract.retry_grant(0)
+    assert contract.get_accounting() == before
+    assert before["locked"] == str(AMOUNT)
+
+
+
+def test_creation_is_nonpayable_draft_then_exact_funding_locks(direct_vm, direct_deploy):
+    contract = deploy(direct_vm, direct_deploy)
+    args = [B_HEX, AMOUNT, "impactrail", "demo", BASE, TARGET, "evidence/report.md", ARTIFACT_SHA, "v1.0.0",
+            "Fund an independently adopted open-source public infrastructure package.", 1, 1, START_TS, 900, 5000,
+            "impact-package", "1.0.0", "2026-08-01", "2026-08-31", 250]
+    grant_id = contract.create_grant(*args)
+    assert contract.get_grant(grant_id)["state"] == "DRAFT"
+    assert contract.get_accounting()["locked"] == "0"
+    direct_vm.value = AMOUNT
+    direct_vm.deal(direct_vm._contract_address, direct_vm._balances.get(direct_vm._contract_address, 0) + AMOUNT)
+    try:
+        assert contract.fund_grant(grant_id) == "FUNDED"
+    finally:
+        direct_vm.value = 0
+    assert contract.get_grant(grant_id)["state"] == "FUNDED"
+    assert contract.get_accounting()["locked"] == str(AMOUNT)
+
+
+def test_invalid_payable_funding_is_recoverable_not_rolled_back(direct_vm, direct_deploy):
+    contract = deploy(direct_vm, direct_deploy)
+    direct_vm.value = 777
+    direct_vm.deal(direct_vm._contract_address, direct_vm._balances.get(direct_vm._contract_address, 0) + 777)
+    try:
+        assert contract.fund_grant(999) == "REFUND_CLAIMABLE"
+    finally:
+        direct_vm.value = 0
+    accounting = contract.get_accounting()
+    assert accounting["unallocated_claimable"] == "777"
+    assert accounting["balance"] == "777"
+    emitted = []
+    def hook(vm, request):
+        if "EthSend" in request:
+            emitted.append(request["EthSend"])
+            return {"ok": None}
+        raise AssertionError(request)
+    direct_vm._gl_call_hook = hook
+    assert contract.withdraw_unallocated() == "TRANSFER_REQUESTED"
+    assert int(emitted[0]["value"]) == 777
+    assert contract.get_accounting()["unallocated_claimable"] == "0"
+
+
+def test_wrong_amount_and_repeated_funding_are_explicit_refunds(direct_vm, direct_deploy):
+    contract = deploy(direct_vm, direct_deploy)
+    args = [B_HEX, AMOUNT, "impactrail", "demo", BASE, TARGET, "evidence/report.md", ARTIFACT_SHA, "v1.0.0",
+            "Fund an independently adopted open-source public infrastructure package.", 1, 1, START_TS, 900, 5000,
+            "impact-package", "1.0.0", "2026-08-01", "2026-08-31", 250]
+    grant_id = contract.create_grant(*args)
+    direct_vm.value = 999
+    direct_vm.deal(direct_vm._contract_address, direct_vm._balances.get(direct_vm._contract_address, 0) + 999)
+    assert contract.fund_grant(grant_id) == "REFUND_CLAIMABLE"
+    assert contract.get_grant(grant_id)["state"] == "DRAFT"
+    direct_vm.value = AMOUNT
+    direct_vm.deal(direct_vm._contract_address, direct_vm._balances.get(direct_vm._contract_address, 0) + AMOUNT)
+    assert contract.fund_grant(grant_id) == "FUNDED"
+    direct_vm.deal(direct_vm._contract_address, direct_vm._balances.get(direct_vm._contract_address, 0) + AMOUNT)
+    assert contract.fund_grant(grant_id) == "REFUND_CLAIMABLE"
+    direct_vm.value = 0
+    sponsor = contract.get_grant(grant_id)["sponsor"]
+    assert contract.get_unallocated_refund(sponsor) == str(999 + AMOUNT)
+    accounting = contract.get_accounting()
+    assert accounting["locked"] == str(AMOUNT)
+    assert accounting["unallocated_claimable"] == str(999 + AMOUNT)
+
+
+def test_outsider_funding_cannot_capture_draft_or_trap_value(direct_vm, direct_deploy):
+    contract = deploy(direct_vm, direct_deploy)
+    args = [B_HEX, AMOUNT, "impactrail", "demo", BASE, TARGET, "evidence/report.md", ARTIFACT_SHA, "v1.0.0",
+            "Fund an independently adopted open-source public infrastructure package.", 1, 1, START_TS, 900, 5000,
+            "impact-package", "1.0.0", "2026-08-01", "2026-08-31", 250]
+    grant_id = contract.create_grant(*args)
+    from genlayer.py.types import Address
+    direct_vm.sender = Address(B_HEX)
+    direct_vm.value = AMOUNT
+    direct_vm.deal(direct_vm._contract_address, direct_vm._balances.get(direct_vm._contract_address, 0) + AMOUNT)
+    try:
+        assert contract.fund_grant(grant_id) == "REFUND_CLAIMABLE"
+    finally:
+        direct_vm.value = 0
+    assert contract.get_grant(grant_id)["state"] == "DRAFT"
+    assert contract.get_unallocated_refund(B_HEX) == str(AMOUNT)
+    assert contract.get_accounting()["locked"] == "0"

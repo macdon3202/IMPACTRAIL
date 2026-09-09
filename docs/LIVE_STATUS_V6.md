@@ -1,5 +1,10 @@
 # V6 live verification
 
+> Historical deployment only. On 2026-09-09 three later payable negative calls
+> finalized with the expected errors but left 3,000,000,000,000 wei in the
+> contract outside grant accounting. See `PAYABLE_ROLLBACK_INCIDENT_V6.md` and
+> `evidence-package/v6-threshold-negative.json`. Do not fund V6.
+
 Reconciled on 2026-09-07 at 05:17:21 UTC using read-only RPC calls.
 
 - Contract: `0xbA2DdBE10249E870EC2CF87A1b8C4e41553A995a`

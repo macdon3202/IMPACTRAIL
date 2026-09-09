@@ -1,0 +1,80 @@
+{
+  "checkedAt": "2026-09-09T07:05:45.234Z",
+  "address": "0xbA2DdBE10249E870EC2CF87A1b8C4e41553A995a",
+  "scope": "Three live V6 invalid-threshold create_grant calls; all attached value must roll back.",
+  "passed": false,
+  "stateUnchanged": false,
+  "transactions": [
+    {
+      "name": "commit-threshold-over-verifier-bound",
+      "hash": "0x8296484790acd0f99646b16ab65a3edfc2822e3d7e33dd8da93a698e847a3afd",
+      "status": "FINALIZED",
+      "expectedError": "INVALID_COVERAGE_WINDOW",
+      "execution": [
+        "ERROR",
+        "ERROR"
+      ],
+      "passed": true
+    },
+    {
+      "name": "zero-download-threshold",
+      "hash": "0xcb91de5fa25a1ec9a38e6b30d14830a41edf07737308c50fb8d2ae3980b2559f",
+      "status": "FINALIZED",
+      "expectedError": "UNSUPPORTED_DOWNLOAD_THRESHOLD",
+      "execution": [
+        "ERROR",
+        "ERROR"
+      ],
+      "passed": true
+    },
+    {
+      "name": "inverted-adoption-period",
+      "hash": "0x375392a16e2b06046c28cc09c13e38a20f579c9d4ac67758893227fc4f9a22cb",
+      "status": "FINALIZED",
+      "expectedError": "INVALID_ADOPTION_PERIOD",
+      "execution": [
+        "ERROR",
+        "ERROR"
+      ],
+      "passed": true
+    }
+  ],
+  "before": {
+    "accounting": {
+      "balance": "0",
+      "beneficiary_claimable": "0",
+      "deposited": "1000000000000",
+      "locked": "0",
+      "outbound_requested": "1000000000000",
+      "sponsor_claimable": "0"
+    },
+    "contractBalance": "0",
+    "sponsorBalance": "199941998000000000000",
+    "sponsorAccount": {
+      "count": 1,
+      "ids": [
+        0
+      ],
+      "registered": false
+    }
+  },
+  "after": {
+    "accounting": {
+      "balance": "3000000000000",
+      "beneficiary_claimable": "0",
+      "deposited": "1000000000000",
+      "locked": "0",
+      "outbound_requested": "1000000000000",
+      "sponsor_claimable": "0"
+    },
+    "contractBalance": "3000000000000",
+    "sponsorBalance": "199941995000000000000",
+    "sponsorAccount": {
+      "count": 1,
+      "ids": [
+        0
+      ],
+      "registered": false
+    }
+  }
+}

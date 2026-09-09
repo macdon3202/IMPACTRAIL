@@ -1,0 +1,25 @@
+{
+  "version": "IMPACT_RAIL_V7",
+  "contract_source": "contracts/impact_rail_v7.py",
+  "contract_sha256": "ab0fd48f082cc2fe7e845230f5329ffb3ef072470b6a1c149f191d9a6fc65a09",
+  "constructor_args": [],
+  "deployment": "PENDING",
+  "deployment_transaction": "PENDING",
+  "deployed_source_sha256": "PENDING",
+  "source_parity": "NOT_YET_VERIFIED",
+  "live_lifecycle": "NOT_YET_RUN",
+  "live_invalid_funding_recovery": "NOT_YET_RUN",
+  "frontend_production": "NOT_YET_UPDATED_TO_V7_ADDRESS",
+  "local_gates": {
+    "genvm_lint_validation": "PASS",
+    "direct_mode_contract_tests": "22 PASS",
+    "complete_python_suite": "96 PASS",
+    "frontend_transaction_tests": "5 PASS",
+    "frontend_production_build": "PASS"
+  },
+  "supersedes": {
+    "version": "IMPACT_RAIL_V6",
+    "deployment": "0xbA2DdBE10249E870EC2CF87A1b8C4e41553A995a",
+    "reason": "Live payable rollback retained attached value outside grant accounting."
+  }
+}
