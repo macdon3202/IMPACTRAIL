@@ -1,0 +1,24 @@
+{
+  "version": "IMPACT_RAIL_V9",
+  "contract_source": "contracts/impact_rail_v9.py",
+  "contract_sha256": "f4bfcdd00666d44293ad6ab03a0c52f9a9b525ec114b161ca43f4f073df26fa2",
+  "constructor_args": [],
+  "verification_commit": "19e1c7ee715f37cc1d7a23ba8df7695e9938de29",
+  "verification_workflow": ".github/workflows/verify-impactrail-v9.yml",
+  "verification_workflow_sha256": "baccc20398a5161a1097c278473d914037f89b5ce230a06d472c4f0ecfe859ca",
+  "verification_run_id": "34336729341",
+  "verification_run_url": "https://github.com/macdon3202/IMPACTRAIL/actions/runs/34336729341",
+  "verification_conclusion": "success",
+  "source_probe": "0xCb798Ac755495c0d372e6E71106eb6903D8aa5d5",
+  "deployment": "PENDING",
+  "live_staged_gates": "NOT_YET_RUN",
+  "live_positive_payout": "NOT_YET_RUN",
+  "production_frontend": "NOT_CONFIGURED_UNTIL_LIVE_PASS",
+  "local_gates": {
+    "genvm_lint_validation": "PASS",
+    "v9_direct_mode": "9 PASS",
+    "full_contract_regression": "136 PASS",
+    "frontend_transaction_tests": "5 PASS",
+    "frontend_build": "PASS"
+  }
+}
