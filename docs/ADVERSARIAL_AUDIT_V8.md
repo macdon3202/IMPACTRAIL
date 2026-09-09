@@ -2,6 +2,13 @@
 
 Status: candidate awaiting its public canonical workflow run and deployment.
 
+The first public run (`34325485141`) failed before contract execution because
+the test harness selected its unavailable latest release (`v0.3.0-rc7`) instead
+of the contract's documented `v0.2.16` runtime. npm binding, package installation
+and contract validation had succeeded. The failure is retained in GitHub Actions
+history; Direct Mode now explicitly selects `v0.2.16`, whose official release
+artifact remains available, and requires a fresh complete run.
+
 ## Steward-request mapping
 
 1. Payout no longer depends on npm's delayed daily counter or owner narrative.

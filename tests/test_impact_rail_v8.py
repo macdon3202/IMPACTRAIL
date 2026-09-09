@@ -25,7 +25,7 @@ RUN_ID = 12345
 def deploy(vm, direct_deploy):
     vm.warp(NOW)
     vm.strict_mocks = True
-    contract = direct_deploy(CONTRACT)
+    contract = direct_deploy(CONTRACT, sdk_version="v0.2.16")
     from genlayer.py.types import Address
     original = vm.sender
     vm.sender = Address(B_HEX)
